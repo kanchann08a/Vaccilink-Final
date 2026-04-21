@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ongoing Session - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        /* Checklist specific styles */
+        .session-info-header {
+            background: linear-gradient(135deg, #2e7d32, #66bb6a);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .children-list-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .child-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #f1f8e9;
+            transition: background 0.3s;
+        }
+
+        .child-row:hover {
+            background-color: #f9fdf9;
+        }
+
+        .child-row.highlighted {
+            background-color: #e8f5e9;
+        }
+
+        .child-info-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .pill-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .pill-vaccinated {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .footer-action {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+
+        .vaccinated-count {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Session Details Header -->
+        <div class="session-info-header">
+            <h2 id="centerName">PHC Mumbai, Zone 4</h2>
+            <p style="margin-top: 5px; opacity: 0.9;" id="sessionDateTime">Date: March 21, 2026 | Time: 09:00 AM - 01:00
+                PM</p>
+        </div>
+
+        <div class="children-list-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Registered Children for Today</h3>
+                <div class="vaccinated-count">Vaccinated: <span id="countDisplay">0</span> / <span
+                        id="totalDisplay">0</span></div>
+            </div>
+
+            <!-- Children Checklist Container -->
+            <div id="childrenContainer">
+                <!-- Rows will be inserted here by JavaScript -->
+            </div>
+
+            <div class="footer-action">
+                <button class="btn btn-secondary" onclick="location.href='dashboard.html'">Back to Dashboard</button>
+                <button class="btn btn-primary" onclick="confirmVaccination()">Confirm Vaccination</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        /* 
+           DATA: Dummy children records for the session
+        */
+        const children = [
+            { id: 1, name: "Aarav Sharma", status: "Pending" },
+            { id: 2, name: "Ishani Gupta", status: "Pending" },
+            { id: 3, name: "Vivaan Reddy", status: "Pending" },
+            { id: 4, name: "Suhana Khan", status: "Pending" },
+            { id: 5, name: "Rahul Verma", status: "Pending" }
+        ];
+
+        /* 
+           INITIALIZE: Render the list of children
+        */
+        function renderChildren() {
+            const container = document.getElementById('childrenContainer');
+            const countDisplay = document.getElementById('countDisplay');
+            const totalDisplay = document.getElementById('totalDisplay');
+
+            container.innerHTML = '';
+            let vaccinatedCount = 0;
+
+            children.forEach(child => {
+                const isVaccinated = child.status === "Vaccinated";
+                if (isVaccinated) vaccinatedCount++;
+
+                const row = document.createElement('div');
+                row.className = `child-row ${isVaccinated ? 'highlighted' : ''}`;
+                row.id = `row-${child.id}`;
+
+                row.innerHTML = `
+                    <div class="child-info-main">
+                        <input type="checkbox" class="checkbox-custom" 
+                               ${isVaccinated ? 'checked disabled' : ''} 
+                               onchange="toggleHighlight(${child.id}, this)">
+                        <div>
+                            <strong style="display: block;">${child.name}</strong>
+                            <span id="label-${child.id}" class="status-pill ${isVaccinated ? 'pill-vaccinated' : 'pill-pending'}">
+                                ${child.status}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            countDisplay.innerText = vaccinatedCount;
+            totalDisplay.innerText = children.length;
+        }
+
+        /* 
+           UI: Highlight checked children immediately
+        */
+        function toggleHighlight(id, checkbox) {
+            const row = document.getElementById(`row-${id}`);
+            if (checkbox.checked) {
+                row.classList.add('highlighted');
+            } else {
+                row.classList.remove('highlighted');
+            }
+        }
+
+        /* 
+           FUNCTION: Confirm vaccination for all checked children
+        */
+        function confirmVaccination() {
+            const checkboxes = document.querySelectorAll('.checkbox-custom:not(:disabled)');
+            let updated = false;
+
+            checkboxes.forEach((cb, index) => {
+                if (cb.checked) {
+                    // Update the status in our dummy data array
+                    // In a real app, this would be an API call
+                    const childId = children[index].id;
+                    // Note: Simplified indexing for demo
+                    const child = children.find(c => c.id == (index + 1));
+                    if (child) {
+                        child.status = "Vaccinated";
+                        updated = true;
+                    }
+                }
+            });
+
+            if (updated) {
+                alert("Vaccination records updated successfully!");
+                renderChildren(); // Re-render the list to reflect permanent changes
+            } else {
+                alert("Please select at least one child to confirm.");
+            }
+        }
+
+        // Run render function on page load
+        window.onload = renderChildren;
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+
+</html>

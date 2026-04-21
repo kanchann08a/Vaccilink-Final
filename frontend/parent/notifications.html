@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts & Reminders - VacciLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .notification-item { display: flex; gap: 20px; padding: 20px; border-bottom: 1px solid #f8faff; transition: background 0.3s; cursor: pointer; }
+        .notification-item:hover { background: #f0f7ff; }
+        .notif-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .icon-blue { background: #e3f2fd; color: #0277bd; }
+        .icon-yellow { background: #fff9e6; color: #d4a017; }
+        .notif-content h4 { margin-bottom: 5px; font-size: 1rem; }
+        .notif-content p { color: var(--text-muted); font-size: 0.9rem; }
+        .notif-time { margin-left: auto; font-size: 0.8rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <div id="navbar-container"></div>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <h2>Alerts & Reminders</h2>
+            <div class="user-actions">
+                <img src="../assets/images/parent-avatar.png" alt="User" class="profile-avatar">
+            </div>
+        </header>
+
+        <section class="card" style="padding: 0;">
+            <div id="notificationList">
+                <div class="notification-item">
+                    <div class="notif-icon icon-blue">
+                        <svg viewBox="0 0 24 24" width="20" stroke="currentColor" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <div class="notif-content">
+                        <h4>Loading alerts…</h4>
+                        <p>Please wait</p>
+                    </div>
+                    <span class="notif-time">—</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const email = localStorage.getItem("parentEmail");
+        if (!email) window.location.href = "login.html";
+
+        function fmtDate(d) {
+            if (!d) return "-";
+            const dt = new Date(d);
+            if (isNaN(dt.getTime())) return "-";
+            return dt.toDateString();
+        }
+
+        function escHtml(s) {
+            const d = document.createElement("div");
+            d.textContent = s == null ? "" : String(s);
+            return d.innerHTML;
+        }
+
+        function displayNotificationText(n) {
+            if (n.message && String(n.message).trim()) return n.message;
+            const dt = n.date ? new Date(n.date) : null;
+            const ds = dt && !isNaN(dt.getTime())
+                ? `${String(dt.getDate()).padStart(2, "0")} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][dt.getMonth()]} ${dt.getFullYear()}`
+                : "-";
+            const child = n.child_name || "Your child";
+            const vax = n.vaccine_name || "vaccination";
+            const hosp = n.hospital_name || "your clinic";
+            if (String(n.type || "").toLowerCase() === "overdue") {
+                return `Overdue: ${vax} vaccine was missed on ${ds}. Please visit ${hosp}.`;
+            }
+            return `Reminder: ${child} has an upcoming ${vax} vaccination on ${ds} at ${hosp}.`;
+        }
+
+        function badgeForType(type) {
+            const t = String(type || "").toLowerCase();
+            if (t === "overdue") return { label: "Overdue", iconClass: "icon-yellow" };
+            return { label: "Reminder", iconClass: "icon-blue" };
+        }
+
+        async function init() {
+            try {
+                const pRes = await fetch("/parent/" + encodeURIComponent(email));
+                const parent = await pRes.json();
+                if (!parent || !parent.childID) throw new Error("Missing childID");
+
+                const nRes = await fetch(`/notifications/${encodeURIComponent(parent.childID)}`);
+                const notifications = await nRes.json();
+
+                const list = document.getElementById("notificationList");
+                list.innerHTML = "";
+
+                if (!notifications || notifications.length === 0) {
+                    list.innerHTML = `
+                        <div class="notification-item" style="cursor: default;">
+                            <div class="notif-icon icon-blue">
+                                <svg viewBox="0 0 24 24" width="20" stroke="currentColor" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            </div>
+                            <div class="notif-content">
+                                <h4>No alerts yet</h4>
+                                <p>We'll notify you when reminders or overdue alerts are created.</p>
+                            </div>
+                            <span class="notif-time">—</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                notifications.forEach(n => {
+                    const meta = badgeForType(n.type);
+                    const item = document.createElement("div");
+                    item.className = "notification-item";
+                    const body = displayNotificationText(n);
+                    const when = fmtDate(n.created_at || n.date);
+
+                    item.innerHTML = `
+                        <div class="notif-icon ${meta.iconClass}">
+                            <svg viewBox="0 0 24 24" width="20" stroke="currentColor" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="notif-content">
+                            <h4>${escHtml(meta.label)}</h4>
+                            <p>${escHtml(body)}</p>
+                        </div>
+                        <span class="notif-time">${escHtml(when)}</span>
+                    `;
+
+                    list.appendChild(item);
+                });
+            } catch (err) {
+                console.error(err);
+                const list = document.getElementById("notificationList");
+                list.innerHTML = `
+                    <div class="notification-item" style="cursor: default;">
+                        <div class="notif-icon icon-yellow">
+                            <svg viewBox="0 0 24 24" width="20" stroke="currentColor" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>
+                        </div>
+                        <div class="notif-content">
+                            <h4>Failed to load alerts</h4>
+                            <p>Please try again later.</p>
+                        </div>
+                        <span class="notif-time">—</span>
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+    <script src="navbar-loader.js"></script>
+</body>
+</html>

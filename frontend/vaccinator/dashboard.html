@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccinator Dashboard - VacciLink</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+</head>
+
+<body>
+
+
+
+
+    <!-- MAIN -->
+    <main class="main-content" id="vaccinatorDashboardRoot">
+
+        <style>
+            /* Professional Hospital Management System Styles */
+            .filter-panel {
+                background: #fff;
+                padding: 24px;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+                margin-bottom: 24px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 20px;
+                align-items: flex-end;
+            }
+
+            .filter-group {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .filter-group label {
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #555;
+                text-transform: none;
+            }
+
+            .filter-group input,
+            .filter-group select {
+                padding: 10px 14px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                outline: none;
+                transition: all 0.2s;
+                background: #fdfdfd;
+            }
+
+            .filter-group input:focus,
+            .filter-group select:focus {
+                border-color: #2e7d32;
+                background: #fff;
+                box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            }
+
+            .status-pill-container {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .btn-status-filter {
+                padding: 8px 16px;
+                border-radius: 20px;
+                border: 1px solid #e0e0e0;
+                background: #fff;
+                cursor: pointer;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #666;
+                transition: all 0.2s;
+            }
+
+            .btn-status-filter.active {
+                background: #2e7d32;
+                color: white;
+                border-color: #2e7d32;
+            }
+
+            .clear-btn {
+                background: #f5f5f5;
+                color: #666;
+                border: 1px solid #ddd;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                height: 42px;
+                font-size: 0.85rem;
+            }
+
+            .clear-btn:hover {
+                background: #eee;
+            }
+
+            .data-table-container {
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+                overflow: hidden;
+                border: 1px solid #eee;
+            }
+
+            .data-table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+            }
+
+            .data-table th {
+                background: #f1f8e9;
+                padding: 16px;
+                font-weight: 700;
+                color: #2e7d32;
+                font-size: 0.9rem;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            .data-table td {
+                padding: 16px;
+                border-bottom: 1px solid #eee;
+                font-size: 0.95rem;
+                vertical-align: middle;
+            }
+
+            .data-table tr:hover {
+                background: #fcfdfc;
+            }
+
+            .badge {
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                display: inline-block;
+            }
+
+            .badge-overdue {
+                background: #ffebee;
+                color: #c62828;
+            }
+
+            .badge-today {
+                background: #fff3e0;
+                color: #ef6c00;
+            }
+
+            .badge-upcoming {
+                background: #e3f2fd;
+                color: #1565c0;
+            }
+
+            .badge-completed {
+                background: #e8f5e9;
+                color: #2e7d32;
+            }
+
+            .search-row {
+                margin-bottom: 24px;
+                position: relative;
+            }
+
+            .search-box {
+                display: flex;
+                align-items: center;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                border-radius: 10px;
+                padding: 0 20px;
+                height: 52px;
+                transition: all 0.2s;
+            }
+
+            .search-box:focus-within {
+                border-color: #2e7d32;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+            .search-box input {
+                border: none;
+                outline: none;
+                width: 100%;
+                height: 100%;
+                font-size: 0.95rem;
+                padding-left: 12px;
+            }
+        </style>
+
+        <style>
+            /* Modern Header Styles */
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+            }
+
+            .scan-qr-btn {
+                background: #fff;
+                border: 1px solid #2e7d32;
+                color: #2e7d32;
+                padding: 8px 18px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s;
+            }
+
+            .scan-qr-btn:hover {
+                background: #f1f8e9;
+            }
+
+            .action-row {
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .btn-action {
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s;
+            }
+
+            .btn-action.primary {
+                background: #2e7d32;
+                color: #fff;
+                border: none;
+            }
+
+            .btn-action.outline {
+                background: #fff;
+                color: #555;
+                border: 1px solid #ddd;
+            }
+
+            .btn-action:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Hero Card update - remove original actions */
+            .dashboard-hero-card {
+                background: #fff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+                margin-bottom: 24px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+        </style>
+
+        <div class="dashboard-header">
+            <div class="header-left">
+                <h1 id="welcomeTitle" style="margin:0; font-size: 1.8rem; font-weight: 800; color: #333;">Welcome,
+                    Vaccinator</h1>
+                <p id="centerInfoSub" style="margin: 4px 0 0 0; color: #666; font-size: 0.9rem; font-weight: 600;">
+                    Center: Loading...</p>
+            </div>
+            <button class="scan-qr-btn" onclick="window.location.href='scanner.html'">
+                Scan QR
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path
+                        d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="dashboard-hero-card"
+            style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%); color: white;">
+            <div class="hero-left">
+                <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Upcoming Vaccination Session</h2>
+                <p id="heroCenterName" style="opacity: 0.9; font-weight: 500; margin-bottom: 4px;">Center: Loading...
+                </p>
+                <p style="opacity: 0.9; font-weight: 500;">Date: Today</p>
+            </div>
+
+            <div class="stat-container" style="display: flex; gap: 30px;">
+                <div class="stat-box" style="text-align: center;">
+                    <span class="stat-label"
+                        style="display: block; font-size: 0.8rem; opacity: 0.8; font-weight: 600; margin-bottom: 4px;">Total</span>
+                    <span class="stat-value" id="statToday" style="font-size: 1.8rem; font-weight: 800;">0</span>
+                </div>
+                <div class="stat-box" style="text-align: center;">
+                    <span class="stat-label"
+                        style="display: block; font-size: 0.8rem; opacity: 0.8; font-weight: 600; margin-bottom: 4px;">Today</span>
+                    <span class="stat-value" id="statTodayOnly" style="font-size: 1.8rem; font-weight: 800;">0</span>
+                </div>
+                <div class="stat-box" style="text-align: center;">
+                    <span class="stat-label"
+                        style="display: block; font-size: 0.8rem; opacity: 0.8; font-weight: 600; margin-bottom: 4px;">Overdue</span>
+                    <span class="stat-value" id="statOverdue" style="font-size: 1.8rem; font-weight: 800;">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button class="btn-action outline" onclick="exportToCSV()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                </svg>
+                Export CSV
+            </button>
+            <button class="btn-action primary" onclick="window.location.href='schedule.html'">
+                Start Session
+            </button>
+        </div>
+
+        <!-- ADVANCED FILTERS -->
+        <div class="filter-panel">
+            <div class="filter-group" style="grid-column: span 2;">
+                <label>Search Address</label>
+                <input type="text" id="addressFilter" placeholder="Filter by address..." oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Vaccine</label>
+                <select id="vaccineFilter" onchange="applyFilters()">
+                    <option value="All">All Vaccines</option>
+                    <option value="BCG">BCG</option>
+                    <option value="Pentavalent">Pentavalent</option>
+                    <option value="OPV">OPV</option>
+                    <option value="Rotavirus">Rotavirus</option>
+                    <option value="IPV">IPV</option>
+                    <option value="PCV">PCV</option>
+                    <option value="MR">MR</option>
+                    <option value="Hepatitis-B">Hepatitis-B</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Min Age (Mos)</label>
+                <input type="number" id="minAgeFilter" value="0" min="0" oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Max Age (Mos)</label>
+                <input type="number" id="maxAgeFilter" value="60" min="0" oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Gender</label>
+                <select id="genderFilter" onchange="applyFilters()">
+                    <option value="Any">Any</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="filter-group" style="grid-column: span 3;">
+                <label>Status</label>
+                <div class="status-pill-container">
+                    <button class="btn-status-filter active" data-status="All"
+                        onclick="setStatusFilter('All')">All</button>
+                    <button class="btn-status-filter" data-status="Today"
+                        onclick="setStatusFilter('Today')">Today</button>
+                    <button class="btn-status-filter" data-status="Overdue"
+                        onclick="setStatusFilter('Overdue')">Overdue</button>
+                    <button class="btn-status-filter" data-status="Upcoming"
+                        onclick="setStatusFilter('Upcoming')">Upcoming</button>
+                    <button class="btn-status-filter" data-status="Completed"
+                        onclick="setStatusFilter('Completed')">Completed</button>
+                </div>
+            </div>
+            <div class="filter-group" style="grid-column: span 1; justify-content: flex-end;">
+                <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+            </div>
+        </div>
+
+        <!-- SEARCH BOX -->
+        <div class="search-row">
+            <div class="search-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    style="color: #666;">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search by Child Name or ID..."
+                    oninput="applyFilters()">
+            </div>
+        </div>
+
+        <!-- TABLE SECTION -->
+        <div class="data-table-container">
+            <table class="data-table" id="dashboardTable">
+                <thead>
+                    <tr>
+                        <th>Child Name</th>
+                        <th>Mother Name</th>
+                        <th>Age (Months)</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Vaccine Name</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #888;">Loading patients...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script src="../js/avatars.js"></script>
+    <script src="vaccinator-sidebar.js"></script>
+    <script>
+        let allData = [];
+        let statusFilter = 'All';
+
+        const centerId = localStorage.getItem("vaccinatorCenterId");
+        const vaccName = localStorage.getItem("vaccinatorName");
+        const vaccEmail = localStorage.getItem("vaccinatorEmail");
+
+        if (!centerId) {
+            window.location.href = "login.html";
+        }
+
+        // --- PHASE 1: HELPERS ---
+        // (Removed getAge - now calculated in backend)
+
+
+
+        async function fetchDashboardData() {
+            try {
+                await hydrateSidebarAndHeader();
+                const res = await fetch(`http://localhost:3000/vaccinator/dashboard/${encodeURIComponent(centerId)}`);
+                if (!res.ok) throw new Error("Failed to fetch dashboard data");
+
+                allData = await res.json();
+                console.log("Dashboard Rows (allData):", allData);
+                updateStats();
+                applyFilters();
+            } catch (err) {
+                console.error(err);
+                const tableBody = document.getElementById("tableBody");
+                if (tableBody) {
+                    tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red; padding: 40px;">Error: ${err.message}</td></tr>`;
+                }
+            }
+        }
+
+        function updateStats() {
+            const todayStr = new Date().toLocaleDateString();
+
+            const totalDue = allData.filter(v => v.status.toLowerCase() !== "completed").length;
+            const todayAppts = allData.filter(v => v.status.toLowerCase() === "today").length;
+            const overdue = allData.filter(v => v.status.toLowerCase() === "overdue").length;
+
+            if (document.getElementById("statToday")) document.getElementById("statToday").innerText = totalDue;
+            if (document.getElementById("statTodayOnly")) document.getElementById("statTodayOnly").innerText = todayAppts;
+            if (document.getElementById("statOverdue")) document.getElementById("statOverdue").innerText = overdue;
+        }
+
+        function setStatusFilter(status) {
+            statusFilter = status;
+            document.querySelectorAll('.btn-status-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const addressTerm = document.getElementById("addressFilter").value.toLowerCase();
+            const vaccineType = document.getElementById("vaccineFilter").value;
+            const gender = document.getElementById("genderFilter").value;
+            const minAge = parseInt(document.getElementById("minAgeFilter").value) || 0;
+            const maxAge = parseInt(document.getElementById("maxAgeFilter").value) || 999;
+
+            // Step 1: Filter raw data
+            const filteredRaw = allData.filter(item => {
+                const matchesSearch = item.childName.toLowerCase().includes(searchTerm) ||
+                    item.childID.toLowerCase().includes(searchTerm) ||
+                    item.parentName.toLowerCase().includes(searchTerm);
+
+                const matchesAddress = (item.address || "").toLowerCase().includes(addressTerm);
+                const matchesVaccine = vaccineType === "All" || item.vaccineName.includes(vaccineType);
+                const matchesGender = gender === "Any" || item.gender === gender;
+
+                // Parse age in months (e.g., "5 Mos" -> 5)
+                const ageMatch = (item.age || "").match(/\d+/);
+                const ageInMonths = ageMatch ? parseInt(ageMatch[0]) : 0;
+                const matchesAge = ageInMonths >= minAge && ageInMonths <= maxAge;
+
+                return matchesSearch && matchesAddress && matchesVaccine && matchesGender && matchesAge;
+            });
+
+            // Step 2: Group by childID
+            const childrenMap = {};
+            filteredRaw.forEach(item => {
+                if (!childrenMap[item.childID]) {
+                    childrenMap[item.childID] = {
+                        ...item,
+                        allVaccines: []
+                    };
+                }
+                childrenMap[item.childID].allVaccines.push(item);
+            });
+
+            let groupedData = Object.values(childrenMap);
+
+            // Step 3: Filter by status tab & Pick priority vaccine for each child
+            if (statusFilter !== "All") {
+                groupedData = groupedData.filter(child => {
+                    return child.allVaccines.some(v => v.status.toLowerCase() === statusFilter.toLowerCase());
+                });
+            }
+
+            // Step 4: For each child, decide which record to show in the row
+            const finalDisplayData = groupedData.map(child => {
+                const vaccines = child.allVaccines;
+                let priority;
+
+                if (statusFilter === "Completed") {
+                    // Show most recent completion
+                    const completed = vaccines.filter(v => v.status.toLowerCase() === "completed");
+                    // Sort by appointmentDate which we'll use as completion date if available
+                    priority = completed.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate))[0];
+                } else {
+                    // Priority: Overdue > Today > Upcoming > Completed
+                    priority = vaccines.find(v => v.status.toLowerCase() === "overdue") ||
+                        vaccines.find(v => v.status.toLowerCase() === "today") ||
+                        vaccines.find(v => v.status.toLowerCase() === "upcoming") ||
+                        vaccines[0];
+                }
+
+                return {
+                    ...child,
+                    displayVaccine: priority
+                };
+            });
+
+            // Step 5: Sort
+            if (statusFilter === "Completed") {
+                finalDisplayData.sort((a, b) => new Date(b.displayVaccine.appointmentDate) - new Date(a.displayVaccine.appointmentDate));
+            }
+
+            renderTable(finalDisplayData);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("tableBody");
+            // Update Headers
+            const thead = document.querySelector("#dashboardTable thead tr");
+            if (statusFilter === "Completed") {
+                thead.innerHTML = `
+                    <th>Child Name</th>
+                    <th>Parent Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Address</th>
+                    <th>Vaccine (Dose)</th>
+                    <th>Completed Date</th>
+                    <th>Actions</th>
+                `;
+            } else {
+                thead.innerHTML = `
+                    <th>Child Name</th>
+                    <th>Parent Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Address</th>
+                    <th>Next/Pending Vaccine</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                `;
+            }
+
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px; color: #888;">No records found.</td></tr>`;
+                return;
+            }
+
+            data.forEach(child => {
+                const item = child.displayVaccine;
+                const tr = document.createElement("tr");
+
+                const statusLower = item.status.toLowerCase();
+                let badgeClass = "badge";
+                if (statusLower === "overdue") badgeClass += " badge-overdue";
+                else if (statusLower === "today") badgeClass += " badge-today";
+                else if (statusLower === "upcoming") badgeClass += " badge-upcoming";
+                else if (statusLower === "completed") badgeClass += " badge-completed";
+
+                const displayStatus = item.status.charAt(0).toUpperCase() + item.status.slice(1);
+                const vaccineEnc = encodeURIComponent(item.vaccineName);
+
+                const detailedAge = child.age || "Not Added";
+                const dateTakenStr = (item.dateTaken || item.appointmentDate) ? new Date(item.dateTaken || item.appointmentDate).toLocaleDateString() : 'N/A';
+
+                tr.innerHTML = `
+                    <td>
+                        <a href="child-summary.html?childId=${encodeURIComponent(child.childID)}" class="clickable-name">${child.childName}</a>
+                        <br><small style="color:#888;">ID: ${child.childID}</small>
+                    </td>
+                    <td>${child.parentName}</td>
+                    <td>${detailedAge}</td>
+                    <td>${child.gender || "N/A"}</td>
+                    <td><small>${child.address}</small></td>
+                    <td>${item.vaccineName} <small>(Dose ${item.doseNumber})</small></td>
+                    ${statusFilter === "Completed" ?
+                        `<td>${dateTakenStr}</td>` :
+                        `<td><span class="${badgeClass}">${displayStatus}</span></td>`
+                    }
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            ${statusLower !== "completed" ? `
+                            <button class="btn btn-primary btn-sm" onclick="markDone('${child.childID}', '${vaccineEnc}', '${item.doseNumber}')">Mark Done</button>
+                            ` : `
+                            <button class="btn btn-secondary btn-sm" onclick="viewProfile('${child.childID}')">View Profile</button>
+                            `}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function viewProfile(childID) {
+            window.location.href = `child-summary.html?childId=${encodeURIComponent(childID)}`;
+        }
+
+        async function markDone(childID, vaccineEnc, doseNumber) {
+            const vaccineName = decodeURIComponent(vaccineEnc);
+            if (!confirm(`Mark ${vaccineName} dose ${doseNumber} as completed for ${childID}?`)) return;
+
+            try {
+                const url = `http://localhost:3000/vaccination/complete/${encodeURIComponent(childID)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(doseNumber)}`;
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        centerId: centerId,
+                        hospital: localStorage.getItem("vaccCenterName") || centerId,
+                        vaccinatorName: vaccName
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Vaccination completed!");
+                    fetchDashboardData();
+                } else {
+                    alert(data.message || "Failed to mark as completed");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error updating record");
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("addressFilter").value = "";
+            document.getElementById("vaccineFilter").value = "All";
+            document.getElementById("genderFilter").value = "Any";
+            document.getElementById("minAgeFilter").value = "0";
+            document.getElementById("maxAgeFilter").value = "60";
+            setStatusFilter('All');
+        }
+
+        function exportToCSV() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const vaccineType = document.getElementById("vaccineFilter").value;
+            const gender = document.getElementById("genderFilter").value;
+
+            const filteredData = allData.filter(item => {
+                const matchesSearch = item.childName.toLowerCase().includes(searchTerm) ||
+                    item.childID.toLowerCase().includes(searchTerm) ||
+                    item.parentName.toLowerCase().includes(searchTerm);
+                const matchesVaccine = vaccineType === "All" || item.vaccineName.includes(vaccineType);
+                const matchesGender = gender === "Any" || item.gender === gender;
+                let matchesStatus = (statusFilter === "All") || (item.status.toLowerCase() === statusFilter.toLowerCase());
+
+                return matchesSearch && matchesVaccine && matchesGender && matchesStatus;
+            });
+
+            if (filteredData.length === 0) {
+                alert("No data to export");
+                return;
+            }
+
+            let csv = "Child Name,Child ID,Parent Name,Age,Gender,Address,Vaccine Name,Dose,Status,Phone\n";
+            filteredData.forEach(item => {
+                const row = [
+                    `"${item.childName}"`,
+                    `"${item.childID}"`,
+                    `"${item.parentName}"`,
+                    `"${item.age || "Not Added"}"`,
+                    `"${item.gender || "N/A"}"`,
+                    `"${item.address.replace(/\n/g, ' ')}"`,
+                    `"${item.vaccineName}"`,
+                    item.doseNumber,
+                    `"${item.status}"`,
+                    `"${item.phone}"`
+                ];
+                csv += row.join(",") + "\n";
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `VacciLink_Export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        window.onload = fetchDashboardData;
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate Verification - VacciLink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/frontend/css/dashboard.css">
+  <style>
+    body {
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .cert-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cert-header {
+      text-align: center;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+
+    .verified-badge {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .cert-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .cert-details {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .cert-detail-item {
+      margin-bottom: 15px;
+    }
+
+    .cert-detail-label {
+      font-size: 0.85rem;
+      color: #757575;
+      margin-bottom: 3px;
+    }
+
+    .cert-detail-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #212121;
+    }
+
+    .qr-section {
+      flex: 0 0 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e0e0e0;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .qr-section img {
+      width: 100%;
+      height: auto;
+    }
+
+    .cert-footer {
+      margin-top: 30px;
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px dashed #e0e0e0;
+      font-size: 0.8rem;
+      color: #9e9e9e;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .error-message {
+      text-align: center;
+      color: #d32f2f;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    @media print {
+      .action-buttons {
+        display: none;
+      }
+
+      body {
+        background: white;
+      }
+
+      .cert-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="cert-container" id="certContainer">
+    <div class="cert-header">
+      <h2 style="color:var(--primary-blue); margin:0;">Digital Vaccination Certificate</h2>
+      <div class="verified-badge" id="verifiedBadge" style="display: none;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        ✔ Verified by Vaccilink
+      </div>
+    </div>
+
+    <div id="loading" style="text-align:center;color:#888;">Verifying certificate...</div>
+    <div id="error" class="error-message" style="display:none;">Invalid or Expired Certificate</div>
+
+    <div id="manualEntry" style="display:none; text-align:center; margin-top:20px;">
+      <p style="color:#555;">Enter Certificate ID to verify manually:</p>
+      <input type="text" id="manualCertId" placeholder="e.g. VACC-2026-1234..."
+        style="padding:10px; width:100%; max-width:300px; border:1px solid #ccc; border-radius:5px; margin-bottom:15px; font-size:1rem;">
+      <br>
+      <button class="btn-primary" onclick="verifyManualId()"
+        style="padding:10px 20px; border:none; background:var(--primary-blue); color:white; border-radius:5px; cursor:pointer;">Verify
+        Certificate</button>
+    </div>
+
+    <div class="cert-body" id="certBody" style="display: none;">
+      <div class="cert-details">
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Beneficiary Name</div>
+          <div class="cert-detail-value" id="childName"></div>
+        </div>
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Parent / Guardian</div>
+          <div class="cert-detail-value" id="parentName"></div>
+        </div>
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Vaccine Administered</div>
+          <div class="cert-detail-value" style="color:var(--primary-green);" id="vaccineName"></div>
+        </div>
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Date of Vaccination</div>
+          <div class="cert-detail-value" id="vaccinationDate"></div>
+        </div>
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Vaccination Center</div>
+          <div class="cert-detail-value" id="hospitalName"></div>
+        </div>
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Administered By</div>
+          <div class="cert-detail-value" id="vaccinatorName"></div>
+        </div>
+        <div class="cert-detail-item">
+          <div class="cert-detail-label">Certificate ID</div>
+          <div class="cert-detail-value" style="font-family:monospace;font-size:1.0rem;" id="certificateId"></div>
+        </div>
+      </div>
+      <div class="qr-section">
+        <img id="qrImage" src="" alt="QR Code">
+        <div style="font-size:0.7rem;margin-top:8px;text-align:center;color:#666;">Scan to verify</div>
+      </div>
+    </div>
+
+    <div class="cert-footer" id="certFooter" style="display:none;">
+      Issued at: <span id="issuedAt"></span> <br>
+      This is an officially generated digital certificate from the VacciLink platform.
+    </div>
+
+    <div class="action-buttons" id="actionButtons" style="display:none;">
+      <button class="btn-primary" onclick="window.print()">Download PDF</button>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const certId = urlParams.get('id');
+
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const certBodyEl = document.getElementById('certBody');
+      const verifiedBadge = document.getElementById('verifiedBadge');
+      const certFooter = document.getElementById('certFooter');
+      const actionButtons = document.getElementById('actionButtons');
+
+      if (!certId) {
+        loadingEl.style.display = 'none';
+        document.getElementById('manualEntry').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/verify/${encodeURIComponent(certId)}`);
+        const data = await response.json();
+
+        loadingEl.style.display = 'none';
+
+        if (!response.ok || !data.verified) {
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        // Populate details
+        document.getElementById('childName').innerText = data.childName || "Unknown";
+        document.getElementById('parentName').innerText = data.parentName || "Unknown";
+        document.getElementById('vaccineName').innerText = data.vaccineName || "Unknown";
+
+        const vDate = new Date(data.date);
+        document.getElementById('vaccinationDate').innerText = isNaN(vDate) ? "Unknown" : vDate.toDateString();
+
+        document.getElementById('hospitalName').innerText = data.hospital || "Unknown";
+        document.getElementById('vaccinatorName').innerText = data.vaccinator || "Unknown";
+        document.getElementById('certificateId').innerText = data.certificateId || "Unknown";
+
+        if (data.qrCode) {
+          document.getElementById('qrImage').src = data.qrCode;
+        }
+
+        const issuedD = new Date(data.issuedAt);
+        document.getElementById('issuedAt').innerText = isNaN(issuedD) ? "Unknown" : issuedD.toLocaleString();
+
+        // Show elements
+        verifiedBadge.style.display = 'inline-flex';
+        certBodyEl.style.display = 'flex';
+        certFooter.style.display = 'block';
+        actionButtons.style.display = 'flex';
+
+      } catch (err) {
+        console.error(err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.innerText = "Error verifying certificate. Please try again.";
+      }
+    });
+    window.verifyManualId = () => {
+      const id = document.getElementById('manualCertId').value.trim();
+      if (id) {
+        window.location.href = `?id=${encodeURIComponent(id)}`;
+      } else {
+        alert("Please enter a Certificate ID");
+      }
+    };
+  </script>
+
+</body>
+
+</html>

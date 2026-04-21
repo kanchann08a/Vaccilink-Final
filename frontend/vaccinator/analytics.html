@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - VacciLink</title>
+    <meta name="description" content="Analytics and insights for vaccination data — VacciLink Vaccinator Dashboard">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="../js/avatars.js"></script>
+
+    <style>
+        /* ── Analytics-specific extras ────────────────────── */
+        .analytics-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .analytics-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 620px) {
+            .analytics-summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .summary-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 22px 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: box-shadow 0.2s;
+        }
+
+        .summary-card:hover {
+            box-shadow: 0 6px 24px rgba(46, 125, 50, 0.10);
+        }
+
+        .summary-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .summary-icon.green  { background: #e8f5e9; }
+        .summary-icon.blue   { background: #e3f2fd; }
+        .summary-icon.orange { background: #fff3e0; }
+        .summary-icon.red    { background: #ffebee; }
+
+        .summary-text h4 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.1;
+            margin-bottom: 3px;
+        }
+
+        .summary-text p {
+            font-size: 0.82rem;
+            color: #777;
+            font-weight: 500;
+        }
+
+        /* Charts row */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .charts-row { grid-template-columns: 1fr; }
+        }
+
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .chart-card p.chart-sub {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+        }
+
+        .chart-wrapper.pie-wrap   { height: 260px; }
+        .chart-wrapper.donut-wrap { height: 260px; }
+        .chart-wrapper.line-wrap  { height: 280px; }
+
+        /* Full-width trend row */
+        .trend-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .trend-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .trend-card p.chart-sub {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        /* Loading / error states */
+        .loading-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .error-msg {
+            text-align: center;
+            padding: 20px;
+            color: #c62828;
+            font-size: 0.9rem;
+        }
+
+        /* Legend pill */
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+            justify-content: center;
+        }
+
+        .legend-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <!-- ── MAIN CONTENT ───────────────────────────────── -->
+    <main class="main-content">
+
+        <header class="welcome-header">
+            <h1>📊 Analytics Dashboard</h1>
+            <p id="analyticsSubheader">Live insights from your vaccination data</p>
+        </header>
+
+        <!-- ── SUMMARY CARDS ── -->
+        <div class="analytics-summary-grid" id="summaryCardsGrid">
+            <div class="summary-card">
+                <div class="summary-icon green">💉</div>
+                <div class="summary-text">
+                    <h4 id="cardTotalVaccinated">—</h4>
+                    <p>Total Vaccinated</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon blue">📅</div>
+                <div class="summary-text">
+                    <h4 id="cardTotalAppointments">—</h4>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon orange">⚠️</div>
+                <div class="summary-text">
+                    <h4 id="cardOverdue">—</h4>
+                    <p>Overdue</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon red">❌</div>
+                <div class="summary-text">
+                    <h4 id="cardMissed">—</h4>
+                    <p>Missed / Lost</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PIE + DOUGHNUT CHARTS ── -->
+        <div class="charts-row">
+
+            <!-- (A) Online vs Onsite Pie Chart -->
+            <div class="chart-card" id="apptTypeSection">
+                <h3>Online vs Onsite Appointments</h3>
+                <p class="chart-sub">Breakdown by appointment type from Appointment collection</p>
+                <div class="chart-wrapper pie-wrap">
+                    <canvas id="apptTypePieChart"></canvas>
+                </div>
+                <div class="legend-row" id="apptTypeLegend"></div>
+            </div>
+
+            <!-- (B) Vaccination Status Doughnut -->
+            <div class="chart-card" id="statusSection">
+                <h3>Vaccination Status Distribution</h3>
+                <p class="chart-sub">Vaccinated · Overdue · Missed · Lost to Follow-Up</p>
+                <div class="chart-wrapper donut-wrap">
+                    <canvas id="statusDoughnutChart"></canvas>
+                </div>
+                <div class="legend-row" id="statusLegend"></div>
+            </div>
+
+        </div>
+
+        <!-- ── LINE CHART: Trend Over Time ── -->
+        <div class="trend-card" id="trendSection">
+            <h3>📈 Vaccination Trend Over Time</h3>
+            <p class="chart-sub">Daily / monthly completed vaccinations based on dateTaken</p>
+            <div class="chart-wrapper line-wrap">
+                <canvas id="trendLineChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ── Auth guard ─────────────────────────────────────
+        const centerId = localStorage.getItem("vaccinatorCenterId");
+        const vaccEmail = localStorage.getItem("vaccinatorEmail");
+
+        if (!centerId) {
+            window.location.href = "login.html";
+        }
+
+        // ── Chart instances (for re-use / destroy) ─────────
+        let pieChartInstance    = null;
+        let donutChartInstance  = null;
+        let lineChartInstance   = null;
+
+        // ── Helper: create loading/error states ────────────
+        function showLoading(canvasId) {
+            const c = document.getElementById(canvasId);
+            if (c) {
+                const wrap = c.parentElement;
+                wrap.innerHTML = `<div class="loading-msg">⏳ Loading chart data...</div>`;
+            }
+        }
+
+        function showError(canvasId, msg) {
+            const c = document.getElementById(canvasId);
+            if (c) {
+                const wrap = c.parentElement;
+                wrap.innerHTML = `<div class="error-msg">⚠️ ${msg}</div>`;
+            }
+        }
+
+        // ── Build legend pills ──────────────────────────────
+        function buildLegend(containerId, labels, colors) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            el.innerHTML = labels.map((lbl, i) =>
+                `<span class="legend-pill">
+                    <span class="legend-dot" style="background:${colors[i]}"></span>
+                    ${lbl}
+                </span>`
+            ).join("");
+        }
+
+        // ── (A) Online vs Onsite Pie Chart ─────────────────
+        async function loadAppointmentTypeChart() {
+            const canvasId = "apptTypePieChart";
+            showLoading(canvasId);
+            try {
+                const res = await fetch(`/api/analytics/appointment-type?centerId=${encodeURIComponent(centerId)}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                const wrap = document.querySelector("#apptTypeSection .chart-wrapper");
+                wrap.innerHTML = `<canvas id="${canvasId}"></canvas>`;
+
+                const total = (data.online || 0) + (data.onsite || 0);
+                document.getElementById("cardTotalAppointments").innerText = total;
+
+                const labels = ["Online", "Onsite"];
+                const values = [data.online || 0, data.onsite || 0];
+                const colors = ["#2e7d32", "#66bb6a"];
+
+                if (total === 0) {
+                    wrap.innerHTML = `<div class="loading-msg" style="color:#aaa;">📭 No appointment data found.</div>`;
+                    return;
+                }
+
+                if (pieChartInstance) pieChartInstance.destroy();
+                pieChartInstance = new Chart(document.getElementById(canvasId), {
+                    type: "pie",
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor: "#fff",
+                            borderWidth: 3,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` ${ctx.label}: ${ctx.parsed} appts`
+                                }
+                            }
+                        }
+                    }
+                });
+                buildLegend("apptTypeLegend", labels, colors);
+            } catch (err) {
+                console.error("Appt chart error:", err);
+                showError(canvasId, "Could not load data.");
+            }
+        }
+
+        // ── (B) Vaccination Status Doughnut ────────────────
+        async function loadStatusChart() {
+            const canvasId = "statusDoughnutChart";
+            showLoading(canvasId);
+            try {
+                const res = await fetch(`/api/analytics/status?centerId=${encodeURIComponent(centerId)}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                const wrap = document.querySelector("#statusSection .chart-wrapper");
+                wrap.innerHTML = `<canvas id="${canvasId}"></canvas>`;
+
+                document.getElementById("cardTotalVaccinated").innerText = data.vaccinated || 0;
+                document.getElementById("cardOverdue").innerText = data.overdue || 0;
+                document.getElementById("cardMissed").innerText = (data.missed || 0) + (data.lost || 0);
+
+                const labels = ["Vaccinated", "Overdue", "Missed", "Lost to F/U"];
+                const values = [data.vaccinated || 0, data.overdue || 0, data.missed || 0, data.lost || 0];
+                const colors = ["#2e7d32", "#ef6c00", "#c62828", "#9e9e9e"];
+
+                const total = values.reduce((a, b) => a + b, 0);
+                if (total === 0) {
+                    wrap.innerHTML = `<div class="loading-msg" style="color:#aaa;">📭 No record data found.</div>`;
+                    return;
+                }
+
+                if (donutChartInstance) donutChartInstance.destroy();
+                donutChartInstance = new Chart(document.getElementById(canvasId), {
+                    type: "doughnut",
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor: "#fff",
+                            borderWidth: 3,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: "60%",
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } }
+                        }
+                    }
+                });
+                buildLegend("statusLegend", labels, colors);
+            } catch (err) {
+                showError(canvasId, "Could not load data.");
+            }
+        }
+
+        // ── (C) Vaccination Trend Line Chart ───────────────
+        async function loadTrendChart() {
+            const canvasId = "trendLineChart";
+            showLoading(canvasId);
+            try {
+                const res = await fetch(`/api/analytics/trend?centerId=${encodeURIComponent(centerId)}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                const wrap = document.querySelector("#trendSection .chart-wrapper");
+                wrap.innerHTML = `<canvas id="${canvasId}"></canvas>`;
+
+                const labels = data.map(d => d.date || "");
+                const counts  = data.map(d => d.count || 0);
+
+                if (labels.length === 0) {
+                    wrap.innerHTML = `<div class="loading-msg" style="color:#aaa;">📭 No completed vaccination records found yet.</div>`;
+                    return;
+                }
+
+                if (lineChartInstance) lineChartInstance.destroy();
+                lineChartInstance = new Chart(document.getElementById(canvasId), {
+                    type: "line",
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: "Vaccinations",
+                            data: counts,
+                            borderColor: "#2e7d32",
+                            backgroundColor: "rgba(46,125,50,0.10)",
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 2.5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                        }
+                    }
+                });
+            } catch (err) {
+                showError(canvasId, "Could not load trend data.");
+            }
+        }
+
+        // ── Init ───────────────────────────────────────────
+        async function init() {
+            // Re-hydrate UI (Sidebar handles its own fetch, this ensures local header elements are updated)
+            if (typeof hydrateSidebarAndHeader === 'function') {
+                await hydrateSidebarAndHeader();
+            }
+
+            // Load charts
+            await Promise.allSettled([
+                loadAppointmentTypeChart(),
+                loadStatusChart(),
+                loadTrendChart()
+            ]);
+        }
+
+        window.onload = init;
+    </script>
+
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+
+</html>

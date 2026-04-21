@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Profile - VacciLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        .profile-header {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .info-item label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        .info-item span {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .timeline-container {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .vaccine-info h4 { margin-bottom: 5px; color: var(--primary-green); }
+        .vaccine-info p { font-size: 0.85rem; color: #666; }
+        .actions { display: flex; gap: 10px; }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-header { margin-bottom: 20px; }
+        .modal-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+        
+        .badge-effect {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-outline-green {
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline-green:hover {
+            background: var(--light-green);
+        }
+        .textarea-custom {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .textarea-custom:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <main class="main-content">
+        <header class="welcome-header">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <button onclick="history.back()" class="btn btn-sm btn-secondary" style="padding:8px;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg></button>
+                <h1>Child Profile</h1>
+            </div>
+        </header>
+
+        <section id="childProfileHeader" class="profile-header">
+            <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <div id="childAvatar" style="width:70px; height:70px;"></div>
+                        <h2 id="childNameTitle" style="color:var(--primary-green); font-size:1.8rem;">Loading...</h2>
+                    </div>
+                    <span id="childIDBadge" class="status-badge" style="background:var(--light-green); color:var(--primary-green); padding:8px 15px;">ID: #---</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item"><label>Date of Birth</label><span id="childDOB">---</span></div>
+                    <div class="info-item"><label>Parent Name</label><span id="parentName">---</span></div>
+                    <div class="info-item"><label>Phone Number</label><span id="parentPhone">---</span></div>
+                    <div class="info-item"><label>Address</label><span id="parentAddress">---</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="timeline-container">
+            <div class="section-title">
+                <h3>Vaccination Timeline</h3>
+                <div class="filter-tabs">
+                    <button class="btn btn-sm btn-secondary active" onclick="filterTimeline('All')">All</button>
+                    <button class="btn btn-sm btn-secondary" onclick="filterTimeline('completed')">Completed</button>
+                    <button class="btn btn-sm btn-secondary" onclick="filterTimeline('pending')">Pending</button>
+                </div>
+            </div>
+            <div id="vaccinationTimeline">
+                <p style="text-align:center; padding:40px; color:#888;">Loading timeline...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Reschedule Modal -->
+    <div id="rescheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reschedule Vaccination</h3>
+                <p id="modalVaccineName" style="font-size:0.9rem; color:#666;"></p>
+            </div>
+            <div class="modal-body">
+                <label style="display:block; margin-bottom:8px; font-size:0.9rem;">Select New Date:</label>
+                <input type="date" id="newDateInput" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" id="btnRescheduleCancel">Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnRescheduleSave">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Effect Modal -->
+    <div id="effectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Log Side Effect</h3>
+                <p style="font-size:0.9rem; color:#666; margin-top:5px;">
+                    Child: <span id="effectChildName" style="font-weight:600; color:#333;"></span><br>
+                    Vaccine: <span id="effectVaccineName" style="font-weight:600; color:#333;"></span>
+                </p>
+            </div>
+            <div class="modal-body">
+                <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:500;">Enter side effect:</label>
+                <textarea id="effectTextInput" class="textarea-custom" placeholder="e.g. Mild Fever, Swelling, Vomiting..."></textarea>
+                <p style="font-size:0.75rem; color:#888; margin-top:5px;">Max 150 characters. Required.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" id="btnEffectCancel">Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnEffectSave">Save Effect</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/avatars.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const childId = urlParams.get('childId');
+        let fullHistory = [];
+        let currentTimelineFilter = 'All';
+        let activeVaccine = null;
+
+        const centerIdStore = () => localStorage.getItem("vaccinatorCenterId") || "";
+        const hospitalStore = () => localStorage.getItem("vaccCenterName") || centerIdStore();
+        const vaccNameStore = () => localStorage.getItem("vaccinatorName") || "Vaccinator";
+
+        function calculateDetailedAge(dobStr) {
+            if (!dobStr) return "N/A";
+            const dob = new Date(dobStr);
+            const today = new Date();
+            let diffMs = today - dob;
+            if (diffMs < 0) return "Not Born Yet";
+
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffWeeks = Math.floor(diffDays / 7);
+
+            if (diffWeeks < 4) {
+                return diffWeeks === 1 ? "1 Week" : `${diffWeeks} Weeks`;
+            }
+
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            if (months < 0 || (months === 0 && today.getDate() < dob.getDate())) {
+                years--;
+                months += 12;
+            }
+            if (today.getDate() < dob.getDate()) {
+                months--;
+            }
+            if (months < 0) months += 12;
+
+            if (years === 0) {
+                return months === 1 ? "1 Month" : `${months} Months`;
+            } else {
+                let ageStr = years === 1 ? "1 Year" : `${years} Years`;
+                if (months > 0) {
+                    ageStr += months === 1 ? " 1 Month" : ` ${months} Months`;
+                }
+                return ageStr;
+            }
+        }
+
+        async function fetchChildData() {
+            if (!childId) return;
+            try {
+                const res = await fetch(`/child/${encodeURIComponent(childId)}`);
+                const data = await res.json();
+
+                // Apply SVG Avatars
+                if (typeof applyAvatar === 'function') {
+                    applyAvatar(document.getElementById("childAvatar"), "baby");
+                }
+                
+                document.getElementById('childNameTitle').innerText = data.childName;
+                document.getElementById('childIDBadge').innerText = `ID: #${data.childID}`;
+                
+                // Use Detailed Age in Header
+                const detailedAge = calculateDetailedAge(data.dob);
+                document.getElementById('childDOB').innerText = `${detailedAge} (${new Date(data.dob).toLocaleDateString()})`;
+                
+                document.getElementById('parentName').innerText = data.parentName;
+                document.getElementById('parentPhone').innerText = data.parentPhone;
+                document.getElementById('parentAddress').innerText = data.address || "—";
+
+                fullHistory = data.vaccinationHistory || [];
+                renderTimeline();
+            } catch (err) {
+                console.error("Error fetching child profile:", err);
+            }
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('vaccinationTimeline');
+            container.innerHTML = "";
+
+            const filtered = fullHistory.filter(v => {
+                if (currentTimelineFilter === 'All') return true;
+                if (currentTimelineFilter === 'completed') return v.status === 'completed';
+                return v.status !== 'completed';
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align:center; padding:40px; color:#888;">No records found matching the filter.</p>`;
+                return;
+            }
+
+            // Prepare dependency map
+            const vaccinesByName = {};
+            fullHistory.forEach(v => {
+                const name = v.vaccineName;
+                if (!vaccinesByName[name]) vaccinesByName[name] = [];
+                vaccinesByName[name].push(v);
+            });
+
+            filtered.forEach(v => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+
+                let statusColor = '#2e7d32';
+                if (v.status === 'overdue') statusColor = '#c62828';
+                if (v.status === 'upcoming' || v.status === 'scheduled') statusColor = '#283593';
+
+                const dateText = v.status === 'completed' && v.dateTaken
+                    ? `Taken on: ${new Date(v.dateTaken).toLocaleDateString()}`
+                    : `Scheduled: ${new Date(v.scheduledDate || v.dueDate).toLocaleDateString()}`;
+
+                const enc = encodeURIComponent(v.vaccineName);
+                const dose = v.doseNumber != null ? v.doseNumber : 1;
+
+                // Dependency check logic
+                let isDependencyMet = true;
+                if (dose > 1) {
+                    const doses = vaccinesByName[v.vaccineName] || [];
+                    const previousDose = doses.find(d => Number(d.doseNumber) === Number(dose) - 1);
+                    if (previousDose && previousDose.status !== 'completed') {
+                        isDependencyMet = false;
+                    }
+                }
+
+                item.innerHTML = `
+                    <div class="vaccine-info">
+                        <h4>${v.vaccineName} <small style="color:#888; font-weight:normal;">(Dose ${dose})</small></h4>
+                        <p>${dateText} | <span class="timeline-status" style="color:${statusColor}; font-weight:600; text-transform:capitalize;">${v.status}</span></p>
+                        ${v.status === 'completed' && v.vaccinatorName ? `<p style="font-size:0.75rem; color:#888; margin-top:4px;">Administered by: ${v.vaccinatorName}</p>` : ''}
+                    </div>
+                    <div class="actions">
+                        ${v.status === 'completed' ? `
+                            <button type="button" class="btn-outline-green effect-btn" data-vaccine="${enc}" data-dose="${dose}" data-effect="${v.postVaccineEffects || ''}">
+                                ${v.postVaccineEffects ? 'Edit Effect' : '+ Add Effect'}
+                            </button>
+                            ${v.postVaccineEffects ? `<span class="badge-effect">${v.postVaccineEffects}</span>` : ''}
+                            ${v.certificateId ? `<button type="button" class="btn btn-sm btn-outline" style="border:1px solid #2e7d32;color:#2e7d32;background:transparent;padding:4px 8px;border-radius:4px;cursor:pointer;" onclick="window.open('/frontend/verify.html?id=${v.certificateId}', '_blank')">View Certificate</button>` : ""}
+                            <span class="badge badge-completed" style="font-size:0.7rem; padding:6px 12px; border-radius:20px; display:inline-block;">COMPLETED</span>
+                        ` : `
+                            <button type="button" class="btn btn-sm btn-secondary reschedule-btn" data-vaccine="${enc}" data-dose="${dose}">Reschedule</button>
+                            <button type="button" class="btn btn-sm btn-primary mark-btn" 
+                                    data-vaccine="${enc}" data-dose="${dose}" 
+                                    ${!isDependencyMet ? 'disabled title="Previous dose not completed" style="opacity:0.6; cursor:not-allowed;"' : ''}>
+                                Mark Done
+                            </button>
+                        `}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        document.getElementById('vaccinationTimeline').addEventListener('click', async (e) => {
+            const markBtn = e.target.closest('.mark-btn');
+            const resBtn = e.target.closest('.reschedule-btn');
+
+            if (markBtn) {
+                if (markBtn.disabled) return;
+                const vaccineName = decodeURIComponent(markBtn.dataset.vaccine);
+                const doseNumber = markBtn.dataset.dose;
+                if (!confirm(`Mark ${vaccineName} completed?`)) return;
+                markBtn.disabled = true;
+                try {
+                    const url = `/vaccination/complete/${encodeURIComponent(childId)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(doseNumber)}`;
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            centerId: centerIdStore(), 
+                            hospital: hospitalStore(),
+                            vaccinatorName: vaccNameStore()
+                        })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok) {
+                        alert(data.message || "Vaccination updated successfully");
+                        await fetchChildData();
+                    } else {
+                        alert(data.message || "Update failed");
+                        markBtn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Network error");
+                    markBtn.disabled = false;
+                }
+                return;
+            }
+
+            if (resBtn) {
+                const vaccineName = decodeURIComponent(resBtn.dataset.vaccine);
+                const doseNumber = resBtn.dataset.dose;
+                openRescheduleModal(vaccineName, doseNumber);
+            }
+
+            const effectBtn = e.target.closest('.effect-btn');
+            if (effectBtn) {
+                const vaccineName = decodeURIComponent(effectBtn.dataset.vaccine);
+                const doseNumber = effectBtn.dataset.dose;
+                const existingEffect = effectBtn.dataset.effect;
+                openEffectModal(vaccineName, doseNumber, existingEffect);
+            }
+        });
+
+        function openRescheduleModal(vaccineName, doseNumber) {
+            activeVaccine = { vaccineName, doseNumber };
+            document.getElementById('modalVaccineName').innerText = `${vaccineName} (Dose ${doseNumber})`;
+            document.getElementById('rescheduleModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('rescheduleModal').style.display = 'none';
+            document.getElementById('effectModal').style.display = 'none';
+        }
+
+        // --- Side Effect Logic ---
+        function openEffectModal(vaccineName, doseNumber, existingEffect) {
+            activeVaccine = { vaccineName, doseNumber };
+            document.getElementById('effectChildName').innerText = document.getElementById('childNameTitle').innerText;
+            document.getElementById('effectVaccineName').innerText = `${vaccineName} (Dose ${doseNumber})`;
+            document.getElementById('effectTextInput').value = existingEffect || "";
+            document.getElementById('effectModal').style.display = 'block';
+        }
+
+        document.getElementById('btnEffectCancel').onclick = closeModal;
+        document.getElementById('btnEffectSave').onclick = async () => {
+            let effect = document.getElementById('effectTextInput').value.trim();
+            if (!effect) { alert("Please enter side effect details"); return; }
+            if (effect.length > 150) { alert("Effect description too long (max 150 chars)"); return; }
+            
+            const btn = document.getElementById('btnEffectSave');
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            try {
+                const res = await fetch('/vaccinator/add-effect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        childID: childId,
+                        vaccineName: activeVaccine.vaccineName,
+                        doseNumber: activeVaccine.doseNumber,
+                        effect: effect
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Show a toast or simple alert
+                    alert("Effect saved successfully");
+                    closeModal();
+                    await fetchChildData(); // Refresh timeline instantly
+                } else {
+                    alert(data.message || "Failed to save effect");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save Effect";
+            }
+        };
+
+        document.getElementById('btnRescheduleCancel').onclick = closeModal;
+        document.getElementById('btnRescheduleSave').onclick = async () => {
+            const newDate = document.getElementById('newDateInput').value;
+            if (!newDate) { alert("Please select a date"); return; }
+            if (!activeVaccine) return;
+            const { vaccineName, doseNumber } = activeVaccine;
+            try {
+                const url = `/vaccination/reschedule/${encodeURIComponent(childId)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(doseNumber)}`;
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newDate })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) {
+                    alert(data.message || "Vaccination updated successfully");
+                    closeModal();
+                    await fetchChildData();
+                } else {
+                    alert(data.message || "Reschedule failed");
+                }
+            } catch (err) {
+                console.error("Error rescheduling:", err);
+            }
+        };
+
+        function filterTimeline(status) {
+            currentTimelineFilter = status;
+            document.querySelectorAll('.filter-tabs .btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase() === status.toLowerCase()) btn.classList.add('active');
+            });
+            renderTimeline();
+        }
+
+        window.addEventListener('click', (event) => {
+            const m = document.getElementById('rescheduleModal');
+            if (event.target === m) closeModal();
+        });
+
+        window.onload = fetchChildData;
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+</html>

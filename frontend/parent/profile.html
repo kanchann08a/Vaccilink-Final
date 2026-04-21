@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Records - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Profile Specific Layout */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 30px;
+        }
+
+        .parent-info-card {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+        }
+
+        .parent-profile-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .child-id-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 25px;
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .badge-verified {
+            background: #e6fffa;
+            color: #2c7a7b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Progress Styling */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: #edf2f7;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-blue);
+            width: 40%;
+        }
+
+        /* Modal / Edit Form Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 450px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .logout-section {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #edf2f7;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="navbar-container"></div>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <h2>Profile & Official Records</h2>
+            <div class="user-actions">
+                <img src="../assets/images/parent-avatar.png" alt="User" class="profile-avatar">
+            </div>
+        </header>
+
+        <div class="profile-container">
+            <!-- 1. Parent Information Card -->
+            <div class="card parent-info-card">
+                <div class="parent-profile-meta">
+                    <img src="../assets/images/parent-avatar.png" alt="Seema" class="profile-avatar"
+                        style="width: 80px; height: 80px;">
+                    <div>
+                        <h3 id="p-name">Seema Yadav</h3>
+                        <p class="text-muted" id="p-phone">+91 87654 02330</p>
+                        <p style="font-size: 0.8rem; color: #a0aec0;">Aadhaar ID: XXXX XXXX 4521</p>
+                        <p id="p-address-display" style="font-size: 0.8rem; color: #718096; margin-top: 4px; display:flex; align-items:center; gap:4px;">
+                            <i class="bi bi-geo-alt-fill" style="color:#4a90d9;"></i>
+                            <span id="p-address-text">—</span>
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-outline" onclick="toggleModal()">Edit Profile</button>
+                    <button class="btn-primary" onclick="alert('Exporting PDF...')">Export Records</button>
+                </div>
+            </div>
+
+            <!-- 2. Child Information Card (Large) -->
+            <div class="card" style="grid-column: 1;">
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
+                    <img src="../assets/images/baby-avatar.png" alt="Arya" class="baby-photo"
+                        style="width: 90px; height: 90px;">
+                    <div>
+                        <h3 id="c-name">Arya Yadav</h3>
+                        <span class="tag">Primary Dependent</span>
+                        <div class="badge-verified">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Guardian Verified
+                        </div>
+                    </div>
+                </div>
+                <div class="status-row"
+                    style="grid-template-columns: 1fr 1fr; border-top: 1px solid #f1f1f1; padding-top: 20px;">
+                    <div class="info-group"><span class="info-label">Gender </span><span class="info-value"
+                            id="c-gender">-</span></div>
+                    <div class="info-group"><span class="info-label">Date of Birth </span><span class="info-value"
+                            id="c-dob">-</span></div>
+                    <div class="info-group"><span class="info-label">Unique Child ID </span><span class="info-value"
+                            id="c-id">-</span></div>
+                    <div class="info-group"><span class="info-label">Blood Group </span><span class="info-value">B+
+                            Positive</span></div>
+                    <div class="info-group" style="grid-column: 1 / span 2;"><span class="info-label">Birth Hospital
+                        </span><span class="info-value" id="c-hospital">-</span></div>
+                </div>
+            </div>
+
+            <!-- 3. Digital Health ID (QR Card) -->
+            <div class="card"
+                style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                <img id="parentQrImg" src="" alt="QR" style="margin: 0 auto; width: 150px; cursor: pointer;"
+                    title="Open vaccination summary">
+                <h4 style="margin-top: 15px;">Digital Health ID</h4>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 20px;">Stable QR for this child.
+                    Vaccinator scans and completes OTP verification.</p>
+                <button type="button" class="btn-sidebar" id="btnRefreshParentQr">Reload QR image</button>
+            </div>
+
+            <!-- 4. Immunization Progress Card -->
+            <div class="card" style="grid-column: 1;">
+                <h3>Immunization Progress</h3>
+                <div class="progress-container">
+                    <div class="progress-bar-bg">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: 600;">
+                        <span id="progressTextLeft">0 / 0 Vaccines</span>
+                        <span id="progressTextRight">0% Completed</span>
+                    </div>
+                </div>
+                <div
+                    style="background: #f0f7ff; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                    <svg viewBox="0 0 24 24" width="20" stroke="#0277bd" stroke-width="2" fill="none">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <div>
+                        <p style="font-size: 0.8rem; color: #0277bd;">Next Milestone</p>
+                        <p style="font-weight: 700;" id="nextMilestone">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Vaccination Summary Card (replaces static table) -->
+            <div class="card" style="grid-column: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Vaccination Summary</h3>
+                    <button class="btn-outline" style="padding: 6px 15px; font-size: 0.85rem;"
+                        onclick="location.href='summary.html'">View Full Record</button>
+                </div>
+                <div class="status-row" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 15px;">
+                    <div class="card status-card completed" style="margin:0;">
+                        <h4>Total vaccines taken</h4>
+                        <span class="status-value" id="sumTotalTaken">0</span>
+                    </div>
+                    <div class="card status-card upcoming" style="margin:0;">
+                        <h4>Last vaccine taken</h4>
+                        <span class="status-value" id="sumLastTaken">-</span>
+                    </div>
+                    <div class="card status-card overdue" style="margin:0;">
+                        <h4>Next due vaccine</h4>
+                        <span class="status-value" id="sumNextDue">-</span>
+                    </div>
+                </div>
+                <p class="text-muted" style="margin-top: 12px; font-size: 0.9rem;">
+                    Hospital: <strong id="sumHospital">-</strong>
+                </p>
+            </div>
+
+            <!-- Leftovers Column (Reminder & Consultation) -->
+            <div class="grid-right" style="grid-column: 2; display: flex; flex-direction: column; gap: 25px;">
+                <!-- Reminder Card -->
+                <div class="card upcoming" style="border-top: 4px solid #f1c40f;">
+                    <h4>Next Appointment</h4>
+                    <p id="apptVaccineLine" style="font-weight: 700; margin-top: 10px;">Loading…</p>
+                    <p id="apptWhenLine" class="text-muted" style="font-size: 0.9rem;">—</p>
+                    <p id="apptHospitalLine" class="text-muted" style="font-size: 0.9rem;">—</p>
+                    <button type="button" class="btn-primary btn-full" id="btnConfirmSlot"
+                        style="background: #f1c40f; color: #7a6300;">Confirm Slot</button>
+                </div>
+
+                <!-- Last Consultation Card -->
+                <div class="card">
+                    <h4>Last Consultation</h4>
+                    <div style="margin-top: 15px;">
+                        <p id="consultDoctorLine" style="font-weight: 700;">Loading…</p>
+                        <p id="consultHospitalLine" class="text-muted" style="font-size: 0.85rem;">—</p>
+                        <p id="consultVisitedLine" class="text-muted" style="font-size: 0.85rem; margin-top: 10px;">—
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn-outline" style="flex:1;">Call</button>
+                        <button class="btn-primary" style="flex:1;">Follow-up</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <section class="logout-section">
+            <button class="btn-sidebar" style="width: 200px; background: #fff5f5; color: #e74c3c;"
+                onclick="handleLogout()">
+                <svg viewBox="0 0 24 24" width="20" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout Account
+            </button>
+        </section>
+    </main>
+
+    <!-- Modal for Editing Profile -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <h3>Edit Profile Information</h3>
+            <div style="margin-top: 20px;">
+                <label>Parent Name</label>
+                <input type="text" class="form-input" id="edit-p-name" value="Seema Yadav">
+                <label>Phone Number</label>
+                <input type="text" class="form-input" id="edit-p-phone" value="+91 87654 02330">
+                <label>Child Name</label>
+                <input type="text" class="form-input" id="edit-c-name" value="Arya Yadav">
+
+                <hr style="margin: 18px 0; border: none; border-top: 1px solid #edf2f7;">
+                <p style="font-size:0.82rem; color:#4a90d9; font-weight:700; margin-bottom:4px;">
+                    <i class="bi bi-geo-alt-fill"></i> Location (used for nearby hospital search)
+                </p>
+                <label>Address</label>
+                <input type="text" class="form-input" id="edit-address" placeholder="e.g. 42 MG Road">
+                <label>City</label>
+                <input type="text" class="form-input" id="edit-city" placeholder="e.g. Pune">
+                <label>Pincode</label>
+                <input type="text" class="form-input" id="edit-pincode" placeholder="e.g. 411001" maxlength="6">
+            </div>
+            <div id="profile-save-msg" style="display:none; font-size:0.85rem; margin-top:10px; padding:8px 12px; border-radius:8px;"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-outline" style="flex: 1;" onclick="toggleModal()">Cancel</button>
+                <button class="btn-primary" style="flex: 1;" id="btnSaveProfile" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* 
+           Profile Page Logic
+           Simple functions to handle modal and navigation
+        */
+
+        function toggleModal() {
+            const modal = document.getElementById('editModal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+            // clear save message
+            const msg = document.getElementById('profile-save-msg');
+            if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+        }
+
+        async function saveProfile() {
+            const btn     = document.getElementById('btnSaveProfile');
+            const msg     = document.getElementById('profile-save-msg');
+            const address = document.getElementById('edit-address').value.trim();
+            const city    = document.getElementById('edit-city').value.trim();
+            const pincode = document.getElementById('edit-pincode').value.trim();
+
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            msg.style.display = 'none';
+
+            try {
+                const res = await fetch('/parent/update', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, address, city, pincode })
+                });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.message || 'Update failed');
+
+                // Update UI display fields
+                document.getElementById('p-name').innerText  = document.getElementById('edit-p-name').value;
+                document.getElementById('p-phone').innerText = document.getElementById('edit-p-phone').value;
+                document.getElementById('c-name').innerText  = document.getElementById('edit-c-name').value;
+
+                // Update address display in card
+                const addrParts = [address, city, pincode].filter(Boolean).join(', ');
+                document.getElementById('p-address-text').textContent = addrParts || '—';
+
+                // Show success message
+                msg.style.background = '#e6fffa';
+                msg.style.color = '#276749';
+                msg.style.border = '1px solid #b2f5ea';
+                msg.textContent = '✅ Location saved! Nearby hospitals will refresh automatically.';
+                msg.style.display = 'block';
+
+                // Dispatch event so appointment page can refresh hospitals
+                window.dispatchEvent(new CustomEvent('parentLocationUpdated', {
+                    detail: { address, city, pincode, fullAddress: addrParts }
+                }));
+
+                // Close modal after 1.5 s
+                setTimeout(() => toggleModal(), 1500);
+
+            } catch (err) {
+                msg.style.background = '#fff5f5';
+                msg.style.color = '#c53030';
+                msg.style.border = '1px solid #feb2b2';
+                msg.textContent = '❌ ' + (err.message || 'Failed to save. Please try again.');
+                msg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Changes';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ✅ Dynamic profile data (no UI redesign; only replace hardcoded values)
+        const email = localStorage.getItem("parentEmail");
+        if (!email) window.location.href = "login.html";
+
+        function formatDob(dobStr) {
+            if (!dobStr) return "-";
+            const parts = String(dobStr).split("-");
+            if (parts.length !== 3) return dobStr;
+            const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10) - 1, d = parseInt(parts[2], 10);
+            const dt = new Date(y, m, d);
+            if (isNaN(dt.getTime())) return dobStr;
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${String(dt.getDate()).padStart(2, "0")} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
+        }
+
+        function safeDate(d) {
+            const dt = new Date(d);
+            return isNaN(dt.getTime()) ? null : dt;
+        }
+
+        async function refreshParentQr(childID) {
+            const qrImg = document.getElementById("parentQrImg");
+            if (!qrImg || !childID) return;
+            try {
+                const r = await fetch(
+                    "/api/parent/secure-qr/" + encodeURIComponent(childID)
+                );
+                const q = await r.json();
+                if (q && q.qrImage) {
+                    qrImg.src = q.qrImage;
+                    qrImg.onclick = function () {
+                        window.location.href = "summary.html";
+                    };
+                }
+            } catch (_) {
+                /* keep previous image if any */
+            }
+        }
+
+        document.getElementById("btnRefreshParentQr").onclick = async () => {
+            const pRes = await fetch("/parent/" + encodeURIComponent(email));
+            const parent = await pRes.json();
+            if (parent && parent.childID) await refreshParentQr(parent.childID);
+        };
+
+        function formatApptWhen(isoDate, timeStr) {
+            if (!isoDate) return "—";
+            const dt = new Date(isoDate);
+            if (isNaN(dt.getTime())) return "—";
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const d = `${String(dt.getDate()).padStart(2, "0")} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
+            const t = timeStr && String(timeStr).trim() ? String(timeStr).trim() : "";
+            return t ? `${d} | ${t}` : d;
+        }
+
+        async function loadAppointmentAndConsultation(childID) {
+            const apptV = document.getElementById("apptVaccineLine");
+            const apptW = document.getElementById("apptWhenLine");
+            const apptH = document.getElementById("apptHospitalLine");
+            const docL = document.getElementById("consultDoctorLine");
+            const hospL = document.getElementById("consultHospitalLine");
+            const visL = document.getElementById("consultVisitedLine");
+
+            try {
+                const aRes = await fetch("/api/appointments?child_id=" + encodeURIComponent(childID));
+                const aData = await aRes.json().catch(() => ({}));
+                const next = aData.next;
+                if (!next || !next.vaccine_name) {
+                    apptV.textContent = "No upcoming appointment";
+                    apptW.textContent = "Book a slot from Appointments when ready.";
+                    apptH.textContent = "—";
+                } else {
+                    const vn = next.vaccine_name || "Vaccine";
+                    const dose = next.dose_number != null ? next.dose_number : "";
+                    apptV.textContent = dose ? `${vn} (Dose ${dose})` : vn;
+                    apptW.textContent = formatApptWhen(next.date, next.time);
+                    apptH.textContent = next.hospital_name || "—";
+                }
+            } catch (_) {
+                apptV.textContent = "Could not load appointment";
+                apptW.textContent = "—";
+                apptH.textContent = "—";
+            }
+
+            try {
+                const cRes = await fetch("/api/consultations/latest?child_id=" + encodeURIComponent(childID));
+                const cData = await cRes.json().catch(() => ({}));
+                const latest = cData.latest;
+                if (!latest || !latest.visited_date) {
+                    docL.textContent = "No visits on record";
+                    hospL.textContent = "Complete a vaccination to see the last visit here.";
+                    visL.textContent = "—";
+                } else {
+                    const L = latest;
+                    docL.textContent = L.doctor_name || "—";
+                    hospL.textContent = L.hospital_name || "—";
+                    const vd = new Date(L.visited_date);
+                    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    visL.textContent =
+                        !isNaN(vd.getTime())
+                            ? `Visited: ${String(vd.getDate()).padStart(2, "0")} ${months[vd.getMonth()]} ${vd.getFullYear()}`
+                            : "—";
+                }
+            } catch (_) {
+                docL.textContent = "Could not load consultation";
+                hospL.textContent = "—";
+                visL.textContent = "—";
+            }
+        }
+
+        document.getElementById("btnConfirmSlot").onclick = function () {
+            window.location.href = "appointment.html";
+        };
+
+        async function initDynamic() {
+            try {
+                const pRes = await fetch("/parent/" + encodeURIComponent(email));
+                const parent = await pRes.json();
+                if (!parent || !parent.childID) throw new Error("Parent not found");
+
+                // Parent info
+                document.getElementById("p-name").innerText  = parent.parentName || "Parent";
+                document.getElementById("p-phone").innerText = parent.phone || "-";
+                
+                // Apply SVG Avatars
+                if (typeof applyAvatar === 'function') {
+                    document.querySelectorAll(".profile-avatar").forEach(el => applyAvatar(el, "parent"));
+                    document.querySelectorAll(".baby-photo").forEach(el => applyAvatar(el, "baby"));
+                }
+
+                // Address display in the card
+                const addrDisplay = [parent.address, parent.city, parent.pincode].filter(Boolean).join(', ');
+                document.getElementById("p-address-text").textContent = addrDisplay || '—';
+
+                // Pre-fill edit modal location fields
+                document.getElementById("edit-p-name").value  = parent.parentName || "";
+                document.getElementById("edit-p-phone").value = parent.phone || "";
+                document.getElementById("edit-c-name").value  = parent.childName || "";
+                document.getElementById("edit-address").value = parent.address || "";
+                document.getElementById("edit-city").value    = parent.city || "";
+                document.getElementById("edit-pincode").value = parent.pincode || "";
+
+                // Child info
+                document.getElementById("c-name").innerText    = parent.childName || "Child";
+                document.getElementById("c-dob").innerText     = formatDob(parent.childDOB);
+                document.getElementById("c-id").innerText      = "#" + (parent.childID || "----");
+                document.getElementById("c-hospital").innerText= parent.hospital || "-";
+                document.getElementById("c-gender").innerText  = parent.gender || parent.childGender || "-";
+
+                // QR (JSON: { childID } or { token } from server)
+                await refreshParentQr(parent.childID);
+
+                // Vaccination merged schedule/history
+                const cRes = await fetch("/child/" + encodeURIComponent(parent.childID));
+                const child = await cRes.json();
+                const merged = child?.vaccinationHistory || [];
+
+                const totalVaccines = merged.length;
+                const completedVaccines = merged.filter(v => v.status === "completed").length;
+                const percent = totalVaccines ? Math.round((completedVaccines / totalVaccines) * 100) : 0;
+
+                document.getElementById("progressTextLeft").innerText = `${completedVaccines} / ${totalVaccines} Vaccines`;
+                document.getElementById("progressTextRight").innerText = `${percent}% Completed`;
+                const fill = document.getElementById("progressFill");
+                fill.style.width = `${percent}%`;
+
+                // Last vaccine taken
+                const completed = merged
+                    .filter(v => v.status === "completed" && v.dateTaken)
+                    .map(v => ({ ...v, dt: safeDate(v.dateTaken) }))
+                    .filter(v => v.dt)
+                    .sort((a, b) => b.dt - a.dt);
+
+                const last = completed[0] || null;
+                document.getElementById("sumTotalTaken").innerText = String(completed.length);
+                document.getElementById("sumLastTaken").innerText = last ? `${last.vaccineName}${last.doseNumber ? ` (Dose ${last.doseNumber})` : ""}` : "-";
+
+                // Next due vaccine
+                const today = new Date(); today.setHours(0, 0, 0, 0);
+                const pending = merged
+                    .filter(v => v.status !== "completed")
+                    .map(v => {
+                        const dt = safeDate(v.scheduledDate || v.dueDate);
+                        return { ...v, dt };
+                    })
+                    .filter(v => v.dt)
+                    .sort((a, b) => a.dt - b.dt);
+
+                const next = pending[0] || null;
+                document.getElementById("sumNextDue").innerText = next ? `${next.vaccineName}${next.doseNumber ? ` (Dose ${next.doseNumber})` : ""}` : "-";
+
+                // Next milestone line
+                if (next) {
+                    const dt = next.dt;
+                    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    const dStr = `${String(dt.getDate()).padStart(2, "0")} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
+                    document.getElementById("nextMilestone").innerText = `${next.vaccineName} Dose on ${dStr}`;
+                } else {
+                    document.getElementById("nextMilestone").innerText = "All vaccines completed";
+                }
+
+                // Hospital name display (requirement: show hospital instead of centerId)
+                document.getElementById("sumHospital").innerText = parent.hospital || "-";
+
+                await loadAppointmentAndConsultation(parent.childID);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        initDynamic();
+    </script>
+    <script src="../js/avatars.js"></script>
+    <script src="navbar-loader.js"></script>
+</body>
+
+</html>

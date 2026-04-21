@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Medical Summary - VacciLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        .summary-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(30, 60, 114, 0.15);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .summary-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .summary-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #cbd5e1;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .table-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        td {
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-completed {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-upcoming {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .status-overdue {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-add-effect {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-effect:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .effect-text {
+            color: #0f172a;
+            font-weight: 500;
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: popIn 0.3s ease-out;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+
+        .effect-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <main class="main-content">
+        <div id="loadingIndicator">Loading child summary...</div>
+        <div id="summaryContent" style="display: none;">
+
+            <div class="summary-header">
+                <h1 id="hdrChildName">Baby Name</h1>
+                <p>Digital Health Summary & Timeline</p>
+                <div class="info-grid">
+                    <div class="info-item"><span class="info-label">Child ID</span><span class="info-value"
+                            id="hdrChildId">-</span></div>
+                    <div class="info-item"><span class="info-label">Date of Birth</span><span class="info-value"
+                            id="hdrDob">-</span></div>
+                    <div class="info-item"><span class="info-label">Parent Name</span><span class="info-value"
+                            id="hdrParent">-</span></div>
+                    <div class="info-item"><span class="info-label">Contact</span><span class="info-value"
+                            id="hdrPhone">-</span></div>
+                    <div class="info-item"><span class="info-label">Primary Hospital</span><span class="info-value"
+                            id="hdrHospital">-</span></div>
+                </div>
+            </div>
+
+            <div class="timeline-container">
+                <!-- Completed Vaccines Section -->
+                <div class="table-card">
+                    <h2 class="section-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Completed Vaccines
+                    </h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vaccine</th>
+                                <th>Dose</th>
+                                <th>Date Given</th>
+                                <th>Post-Vaccine Effects</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Upcoming Vaccines Section -->
+                <div class="table-card" style="margin-bottom: 40px;">
+                    <h2 class="section-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Upcoming & Pending Vaccines
+                    </h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vaccine</th>
+                                <th>Dose</th>
+                                <th>Scheduled Date</th>
+                                <th>Expected Milestone</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="upcomingTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Post-Vaccine Effects -->
+    <div id="effectModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Log Post-Vaccine Effect</h3>
+            <p style="font-size: 0.9rem; color: #64748b; margin-top: 5px;">Record any observed side effects for <b
+                    id="modalVaccineName"></b>.</p>
+            <textarea id="effectInput" class="effect-input" rows="3"
+                placeholder="e.g. Mild fever, swelling at injection site, or None"></textarea>
+            <input type="hidden" id="modalDoseNumber">
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeEffectModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEffect()">Save Effect</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/avatars.js"></script>
+    <script>
+
+        const params = new URLSearchParams(window.location.search);
+        let childId = params.get("childId");
+
+        if (!childId) {
+            alert("Missing Child ID");
+            window.location.href = "dashboard.html";
+        }
+
+        childId = String(childId).trim();
+
+        let currentChildId = childId;
+
+        if (!childId) {
+            alert("Missing Child ID");
+            window.location.href = "dashboard.html";
+        }
+
+        async function fetchChildSummary() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const summaryContent = document.getElementById('summaryContent');
+
+            try {
+                console.log(`[Frontend] Fetching summary for childId: ${childId}`);
+                const res = await fetch(`/vaccinator/child-summary/${encodeURIComponent(String(childId).trim())}`);
+                const result = await res.json();
+
+                if (!res.ok || !result.success) {
+                    throw new Error(result.message || "Failed to fetch child data.");
+                }
+
+                const data = result.child;
+                console.log("[Frontend] Data received:", data);
+
+                if (!data) throw new Error("No child data found in response.");
+
+                // Populate Header Information
+                document.getElementById('hdrChildName').textContent = data.childName || 'N/A';
+                document.getElementById('hdrChildId').textContent = data.childID || '-';
+                document.getElementById('hdrDob').textContent = data.childDOB ? new Date(data.childDOB).toDateString() : 'N/A';
+                document.getElementById('hdrParent').textContent = data.parentName || 'N/A';
+                document.getElementById('hdrPhone').textContent = data.phone || 'N/A';
+
+                // Usually hospital is available via address or from a primary structure. 
+                const completedHosp = (data.vaccinationHistory || []).find(v => v.hospital)?.hospital;
+                document.getElementById('hdrHospital').textContent = completedHosp || data.address || '-';
+
+                populateTables(data.vaccinationHistory || []);
+
+                loadingIndicator.style.display = 'none';
+                summaryContent.style.display = 'block';
+
+            } catch (err) {
+                console.error("[Frontend Error]", err);
+                loadingIndicator.innerHTML = `<div style="color: #ef4444; font-weight: 600;">
+                    Error: ${err.message}<br>
+                    <span style="font-size: 0.9rem; font-weight: 400; color: #64748b;">Please try restarting the server or check the child ID.</span>
+                </div>`;
+            }
+        }
+
+        function populateTables(history) {
+            const completedBody = document.getElementById('completedTableBody');
+            const upcomingBody = document.getElementById('upcomingTableBody');
+
+            completedBody.innerHTML = "";
+            upcomingBody.innerHTML = "";
+
+            let hasCompleted = false;
+            let hasUpcoming = false;
+
+            history.forEach(v => {
+                const tr = document.createElement('tr');
+                const isCompleted = (v.status === 'completed' || v.dateTaken);
+
+                if (isCompleted) {
+                    hasCompleted = true;
+                    const dateGiven = v.dateTaken ? new Date(v.dateTaken).toDateString() : 'N/A';
+
+                    let effectCol = "";
+                    if (v.postVaccineEffects) {
+                        effectCol = `<span class="effect-text">${v.postVaccineEffects}</span>`;
+                    } else {
+                        effectCol = `<button class="btn-add-effect" onclick="openEffectModal('${v.vaccineName}', '${v.doseNumber}')">+ Add Effect</button>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td><b>${v.vaccineName}</b></td>
+                        <td>${v.doseNumber}</td>
+                        <td>${dateGiven}</td>
+                        <td>${effectCol}</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    `;
+                    completedBody.appendChild(tr);
+                } else {
+                    hasUpcoming = true;
+                    const dateScheduled = (v.scheduledDate || v.dueDate) ? new Date(v.scheduledDate || v.dueDate).toDateString() : 'N/A';
+                    const ageMilestone = v.age || '-';
+                    let statusClass = 'status-upcoming';
+                    let statusLabel = 'Upcoming';
+                    if (v.status === 'overdue') { statusClass = 'status-overdue'; statusLabel = 'Overdue'; }
+
+                    tr.innerHTML = `
+                        <td><b>${v.vaccineName}</b></td>
+                        <td>${v.doseNumber}</td>
+                        <td>${dateScheduled}</td>
+                        <td>${ageMilestone}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                    `;
+                    upcomingBody.appendChild(tr);
+                }
+            });
+
+            if (!hasCompleted) {
+                completedBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No completed vaccines found.</td></tr>';
+            }
+            if (!hasUpcoming) {
+                upcomingBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No upcoming vaccines pending.</td></tr>';
+            }
+        }
+
+        // Modal Logic
+        function openEffectModal(vaccineName, doseNumber) {
+            document.getElementById('modalVaccineName').textContent = decodeURIComponent(vaccineName);
+            document.getElementById('modalDoseNumber').value = doseNumber;
+            document.getElementById('effectInput').value = "";
+            document.getElementById('effectModal').style.display = 'flex';
+        }
+
+        function closeEffectModal() {
+            document.getElementById('effectModal').style.display = 'none';
+        }
+
+        async function saveEffect() {
+            const vaccineName = document.getElementById('modalVaccineName').textContent;
+            const doseNumber = document.getElementById('modalDoseNumber').value;
+            const effects = document.getElementById('effectInput').value.trim();
+
+            if (!effects) {
+                alert("Please enter a valid effect or type 'None'.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/vaccination/effects/${encodeURIComponent(currentChildId)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(doseNumber)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ effects })
+                });
+
+                if (!res.ok) throw new Error("Failed to save effect.");
+                closeEffectModal();
+                fetchChildSummary(); // Reload the tables
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred while saving the effect.");
+            }
+        }
+
+        window.onload = fetchChildSummary;
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+
+</html>

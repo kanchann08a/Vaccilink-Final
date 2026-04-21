@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointments - VacciLink</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+
+    <style>
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--primary-green);
+            background: transparent;
+            color: var(--primary-green);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .appointment-form input,
+        .appointment-form select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        .appointment-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-accept {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .btn-reject {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #c62828;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <header class="welcome-header">
+            <h1>Manage Appointments</h1>
+            <p id="centerDisplay">Center ID: Loading...</p>
+        </header>
+
+        <div class="dashboard-grid">
+
+            <!-- LEFT: APPOINTMENTS LIST -->
+            <div class="grid-left" style="grid-column: span 7;">
+
+                <div class="card">
+                    <div class="section-title">
+                        <h3>Online Appointments</h3>
+                    </div>
+
+                    <div class="action-bar" style="margin-bottom: 20px;">
+                        <div class="search-box" style="flex:1;">
+                            <input type="text" id="searchInput" placeholder="Search by Child Name or ID..."
+                                oninput="filterAppointments()">
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab('Today')">Today</button>
+                        <button class="tab-btn" onclick="switchTab('Upcoming')">Upcoming</button>
+                        <button class="tab-btn" onclick="switchTab('Completed')">Completed</button>
+                        <button class="tab-btn" onclick="switchTab('All')">All</button>
+                    </div>
+
+                    <div id="appointmentsList" class="child-card-list"
+                        style="max-height: 600px; position: relative; z-index: 1;">
+                        <p style="text-align:center;">Loading appointments...</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: ONSITE REGISTRATION -->
+            <div class="grid-right" style="grid-column: span 5;">
+                <div class="card">
+                    <div class="section-title">
+                        <h3>Onsite / Walk-in Registration</h3>
+                    </div>
+
+                    <form id="onsiteForm" class="appointment-form">
+
+                        <div style="display:flex; gap:10px;">
+                            <div style="flex:1;">
+                                <label>Child Name</label>
+                                <input type="text" id="childName" required placeholder="Full Name">
+                            </div>
+                            <div style="flex:1;">
+                                <label>Date of Birth</label>
+                                <input type="date" id="childDOB" required>
+                            </div>
+                            <div style="flex:1;">
+                                <label>Gender</label>
+                                <select id="childGender" required>
+                                    <option value="">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label>Parent Name</label>
+                        <input type="text" id="parentName" required placeholder="Parent's Full Name">
+
+                        <label>Phone Number</label>
+                        <input type="text" id="phone" required placeholder="10-digit mobile number">
+
+                        <label>Address</label>
+                        <input type="text" id="address" required placeholder="Street, City, Pincode">
+
+                        <label>Vaccine Requested</label>
+                        <select id="vaccineName" required>
+                            <option value="" disabled selected>Select Vaccine</option>
+                            <option value="BCG">BCG</option>
+                            <option value="OPV-0">OPV-0</option>
+                            <option value="Hepatitis-B">Hepatitis-B</option>
+                            <option value="Pentavalent-1">Pentavalent-1</option>
+                            <option value="OPV-1">OPV-1</option>
+                            <option value="Rotavirus-1">Rotavirus-1</option>
+                            <option value="MR-1">MR-1</option>
+                            <option value="DPT Booster">DPT Booster</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Register &
+                            Admit Walk-in</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="../js/avatars.js"></script>
+    <script src="vaccinator-sidebar.js"></script>
+    <script>
+        const centerId = localStorage.getItem("vaccinatorCenterId");
+        const vaccName = localStorage.getItem("vaccinatorName");
+
+        if (!centerId) {
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("centerDisplay").innerText = `Center ID: ${centerId}`;
+        document.getElementById("sidebarName").innerText = vaccName || "Vaccinator";
+
+        let allAppointments = [];
+        let currentTab = 'Today';
+
+        function hospitalLabel() {
+            return localStorage.getItem("vaccCenterName") || centerId;
+        }
+
+        async function fetchAppointments() {
+            try {
+                const res = await fetch(`/vaccinator/appointments?centerId=${encodeURIComponent(centerId)}`);
+                if (!res.ok) throw new Error("API error");
+
+                allAppointments = await res.json();
+                renderAppointments();
+            } catch (err) {
+                console.error(err);
+                document.getElementById("appointmentsList").innerHTML = `<p style="color:red; text-align:center;">Failed to load data</p>`;
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText === tab) btn.classList.add('active');
+            });
+            renderAppointments();
+        }
+
+        function renderAppointments() {
+            const list = document.getElementById("appointmentsList");
+            list.innerHTML = "";
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let filtered = allAppointments.filter(app => {
+                const appDate = new Date(app.appointmentDate);
+                appDate.setHours(0, 0, 0, 0);
+
+                if (currentTab === 'Today') {
+                    return appDate.getTime() === today.getTime() && app.status !== 'completed';
+                }
+                if (currentTab === 'Upcoming') {
+                    return appDate.getTime() > today.getTime() && app.status !== 'completed';
+                }
+                if (currentTab === 'Completed') {
+                    return app.status === 'completed';
+                }
+                return true; // 'All'
+            });
+
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(a =>
+                    a.childName?.toLowerCase().includes(searchTerm) ||
+                    a.childID?.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<p style="text-align:center; padding:20px; color:#888;">No appointments found in this category.</p>`;
+                return;
+            }
+
+            filtered.forEach(app => {
+                const card = document.createElement("div");
+                card.className = "child-item";
+                card.style.cssText = "flex-direction:column;align-items:stretch;";
+
+                let statusColor = "#283593"; // default blue
+                if (app.status === "pending") statusColor = "#ef6c00";
+                if (app.status === "accepted") statusColor = "#2e7d32";
+                if (app.status === "completed") statusColor = "#4caf50";
+                if (app.status === "rejected") statusColor = "#c62828";
+
+                const badgeStyle = `background:${statusColor}; color:white; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:bold;`;
+
+                const formattedDate = new Date(app.appointmentDate).toDateString();
+                const dose = app.doseNumber != null ? app.doseNumber : 1;
+                const encV = encodeURIComponent(app.vaccineName || "");
+                const apptId = app._id || "";
+
+                const doneBlock = app.status === "completed"
+                    ? `<p style="font-size:0.85rem;color:#2e7d32;margin-top:10px;">✔ Vaccination marked completed</p>`
+                    : "";
+
+                const arriveBlock = (app.status === "pending" || app.status === "accepted") ? `
+                    <div style="display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                        <span style="font-size:0.85rem; font-weight:600;">Arrived Today:</span>
+                        <div style="display:flex; background:#eee; border-radius:20px; padding:2px;">
+                            <button type="button" class="appt-arr-yes btn btn-sm" style="border:none;border-radius:16px;padding:4px 12px;cursor:pointer;" data-child="${app.childID}" data-venc="${encV}" data-dose="${dose}">YES</button>
+                            <button type="button" class="appt-arr-no btn btn-sm" style="border:none;border-radius:16px;padding:4px 12px;cursor:pointer;" data-child="${app.childID}" data-venc="${encV}" data-dose="${dose}">NO</button>
+                        </div>
+                    </div>` : "";
+
+                const pendingBtns = app.status === "pending" ? `
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-sm btn-accept appt-accept" data-id="${apptId}">Accept</button>
+                            <button type="button" class="btn btn-sm btn-reject appt-reject" data-id="${apptId}">Reject</button>
+                        </div>
+                    ` : "";
+
+                const markBtns = (app.status === "accepted") ? `
+                        <div class="action-buttons" style="margin-top:10px;">
+                            <button type="button" class="btn btn-sm btn-accept appt-mark-done" data-child="${app.childID}" data-venc="${encV}" data-dose="${dose}">✔ Mark Done</button>
+                        </div>
+                    ` : "";
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <b style="font-size:1.1rem; color:var(--primary-green);">${app.childName || 'Unknown Child'}</b>
+                            <span style="font-size:0.85rem; color:#888; margin-left:8px;">ID: #${app.childID || 'N/A'}</span><br>
+                            <div style="margin-top: 5px; font-size: 0.9rem; color: #444;">
+                                <strong>Vaccine:</strong> ${app.vaccineName} (Dose ${dose}) <br>
+                                <strong>Date:</strong> ${formattedDate} (${app.type === 'onsite' ? 'Walk-in' : 'Online'}) <br>
+                                <strong>Parent/Phone:</strong> ${app.parentPhone || 'N/A'}
+                            </div>
+                        </div>
+                        <span style="${badgeStyle}">${app.status.toUpperCase()}</span>
+                    </div>
+                    ${arriveBlock}
+                    ${pendingBtns}
+                    ${markBtns}
+                    ${doneBlock}
+                `;
+
+                list.appendChild(card);
+            });
+        }
+
+        function filterAppointments() {
+            renderAppointments();
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                const res = await fetch(`/vaccinator/appointment/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) {
+                    fetchAppointments();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function markApptArrived(childId, encV, dose, arrived) {
+            const vaccineName = decodeURIComponent(encV);
+            const url = `/vaccination/arrived/${encodeURIComponent(childId)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(dose)}`;
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ arrived })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) alert(data.message || "Updated");
+            else alert(data.message || "Failed");
+        }
+
+        async function markVaccinated(childID, encV, dose, btn) {
+            const vaccineName = decodeURIComponent(encV);
+            if (!confirm(`Mark ${vaccineName} as completed?`)) return;
+            try {
+                if (btn) { btn.disabled = true; btn.innerText = "Saving…"; }
+
+                const payload = {
+                    childID: childID,
+                    vaccineName: vaccineName,
+                    doseNumber: dose,
+                    centerName: hospitalLabel(),
+                    vaccinatorName: localStorage.getItem("vaccinatorName") || ""
+                };
+
+                const url = `/mark-done`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) {
+                    alert(data.message || "Vaccination marked completed");
+                    fetchAppointments();
+                } else {
+                    alert(data.message || "Failed");
+                    if (btn) { btn.disabled = false; btn.innerText = "✔ Mark Done"; }
+                }
+            } catch (e) {
+                console.error(e);
+                if (btn) { btn.disabled = false; btn.innerText = "✔ Mark Done"; }
+            }
+        }
+
+        document.getElementById("appointmentsList").addEventListener("click", (e) => {
+            const acc = e.target.closest(".appt-accept");
+            if (acc) { updateStatus(acc.dataset.id, "accepted"); return; }
+            const rej = e.target.closest(".appt-reject");
+            if (rej) { updateStatus(rej.dataset.id, "rejected"); return; }
+            const ay = e.target.closest(".appt-arr-yes");
+            if (ay) { markApptArrived(ay.dataset.child, ay.dataset.venc, ay.dataset.dose, true); return; }
+            const an = e.target.closest(".appt-arr-no");
+            if (an) { markApptArrived(an.dataset.child, an.dataset.venc, an.dataset.dose, false); return; }
+            const md = e.target.closest(".appt-mark-done");
+            if (md) { markVaccinated(md.dataset.child, md.dataset.venc, md.dataset.dose, md); }
+        });
+
+        document.getElementById("onsiteForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const payload = {
+                childName: document.getElementById("childName").value,
+                childDOB: document.getElementById("childDOB").value,
+                gender: document.getElementById("childGender").value,
+                parentName: document.getElementById("parentName").value,
+                phone: document.getElementById("phone").value,
+                address: document.getElementById("address").value,
+                vaccineName: document.getElementById("vaccineName").value,
+                centerId: centerId
+            };
+
+            try {
+                const res = await fetch("/vaccinator/onsite-register", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    document.getElementById("onsiteForm").reset();
+                    fetchAppointments(); // Refresh list to show new walk-in
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Failed to submit walk-in registration");
+            }
+        });
+
+        window.onload = async () => {
+            // Apply SVG Avatar to Sidebar
+            if (typeof applyAvatar === 'function') {
+                applyAvatar(document.querySelector(".vaccinator-profile .profile-img"), "vaccinator");
+            }
+            
+            const em = localStorage.getItem("vaccinatorEmail");
+            if (em) {
+                try {
+                    const r = await fetch(`/vaccinator/profile/${encodeURIComponent(em)}`);
+                    if (r.ok) {
+                        const p = await r.json();
+                        if (p.centerName) localStorage.setItem("vaccCenterName", p.centerName);
+                    }
+                } catch (_) { }
+            }
+            fetchAppointments();
+        };
+    </script>
+</body>
+
+</html>

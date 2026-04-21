@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccinator Profile - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        /* Extra styles for Profile Specific Layout */
+        .profile-header-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .header-profile-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-img-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .header-details h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .header-details p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-outline-green {
+            background: white;
+            color: var(--primary-green);
+            border: 1.5px solid var(--primary-green);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-outline-green:hover {
+            background: var(--light-green);
+        }
+
+        .verified-badge {
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .info-list {
+            margin-top: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f8e9;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .info-item span {
+            font-weight: 600;
+        }
+
+        .qr-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .qr-mockup {
+            width: 180px;
+            height: 180px;
+            background: #f9f9f9;
+            margin: 20px auto;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recent-activity-list {
+            margin-top: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f8e9;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-bullet {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-green);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="welcome-header">
+            <h1>Vaccinator Profile</h1>
+            <p>Manage your professional identity and session history</p>
+        </header>
+
+        <!-- TOP PROFILE CARD -->
+        <div class="profile-header-card">
+            <div class="header-profile-info">
+                <div class="header-img-circle" id="headerInitials">SY</div>
+                <div class="header-details">
+                    <h2 id="headerName">Seema Yadav</h2>
+                    <p id="headerPhone">Phone: +91 98765 43210</p>
+                    <p id="headerAadhaar">Aadhaar ID: XXXX XXXX 4521</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-outline-green" onclick="alert('Edit Profile mode activated')">Edit Profile</button>
+                <button class="btn-qr"
+                    style="background-color: var(--primary-green); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Export
+                    Records</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Side -->
+            <div class="grid-left">
+                <!-- VACCINATOR INFO CARD -->
+                <div class="card">
+                    <div class="section-title">
+                        <h3>Vaccinator Details</h3>
+                        <span class="verified-badge">Verified Vaccinator</span>
+                    </div>
+                    <div class="info-list">
+                        <div class="info-item"><label>Name</label><span id="detailName">Seema Yadav</span></div>
+                        <div class="info-item"><label>Role</label><span id="detailRole">Vaccinator</span></div>
+                        <div class="info-item"><label>Center Name</label><span id="detailCenter">PHC Mumbai, Zone
+                                4</span></div>
+                        <div class="info-item"><label>Total Sessions Conducted</label><span
+                                id="detailSessions">48</span></div>
+                        <div class="info-item"><label>Total Children Vaccinated</label><span
+                                id="detailChildren">1,420</span></div>
+                    </div>
+                </div>
+
+                <!-- LAST SESSION / RECENT ACTIVITY CARD -->
+                <div class="card" style="display: flex; flex-direction: column;">
+                    <h3>Last Vaccination Session</h3>
+                    <div
+                        style="margin: 15px 0; padding: 15px; background: #f9fdf9; border: 1px solid #e8f5e9; border-radius: 12px;">
+                        <p style="font-size: 0.9rem; margin-bottom: 5px;"><strong>Date:</strong> <span
+                                id="lastSessionDate">March 20, 2026</span></p>
+                        <p style="font-size: 0.9rem; margin-bottom: 5px;"><strong>Location:</strong> <span
+                                id="lastSessionLocation">Community Center A</span></p>
+                        <p style="font-size: 0.9rem;"><strong>Children Vaccinated:</strong> <span
+                                id="lastSessionChildren">24</span></p>
+                    </div>
+
+                    <div class="recent-activity-list" style="margin-top: 10px; border-top: 1px solid #eee;">
+                        <div id="recentSessionsList">
+                            <div class="activity-item" style="padding: 12px 5px; border-bottom: 1px solid #f9f9f9;">
+                                <div class="activity-bullet"></div> Loading...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 25px; padding-bottom: 10px;">
+                        <button class="btn-qr" onclick="location.href='all_records.html'"
+                            style="display: inline-flex; align-items: center; justify-content: center; width: auto; min-width: 180px; height: 45px; background-color: var(--primary-green); color: white; border: none; border-radius: 25px; font-weight: 700; cursor: pointer; padding: 0 30px; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2); transition: all 0.3s ease;">
+                            View All <span style="margin-left: 10px; font-size: 1.1rem;">&rarr;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="grid-right">
+                <!-- VACCINATOR SUMMARY CARD -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px;">Vaccinator Summary</h3>
+
+                    <div class="info-list">
+                        <div class="info-item" style="padding: 15px 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="20" stroke="var(--primary-green)" stroke-width="2"
+                                    fill="none">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <label style="margin: 0;">Sessions Conducted</label>
+                            </div>
+                            <span style="color: var(--primary-green); font-size: 1.1rem;">48</span>
+                        </div>
+
+                        <div class="info-item" style="padding: 15px 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="20" stroke="var(--primary-green)" stroke-width="2"
+                                    fill="none">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                <label style="margin: 0;">Children Vaccinated</label>
+                            </div>
+                            <span style="color: var(--primary-green); font-size: 1.1rem;">1,420</span>
+                        </div>
+
+                        <div class="info-item" style="padding: 15px 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="20" stroke="var(--primary-green)" stroke-width="2"
+                                    fill="none">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <label style="margin: 0;">Last Session Date</label>
+                            </div>
+                            <span style="font-weight: 600;">Mar 20, 2026</span>
+                        </div>
+
+                        <div class="info-item" style="padding: 15px 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="20" stroke="var(--primary-green)" stroke-width="2"
+                                    fill="none">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <label style="margin: 0;">Assigned Center</label>
+                            </div>
+                            <span style="font-weight: 600;">PHC Mumbai</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Info Help Card -->
+                <div class="card" style="border-left: 4px solid var(--primary-green); background: #f9fdf9;">
+                    <h4>Need Help?</h4>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">If you see any incorrect details in your profile,
+                        please contact the district health administrator.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/avatars.js"></script>
+    <script>
+        // ── Deployment config ──────────────────────────────────────────────
+        // Replace the placeholder below with your actual Render backend URL
+        // e.g. "https://vaccilink-api.onrender.com"
+        const API_BASE_URL = "http://localhost:3000";
+        // ──────────────────────────────────────────────────────────────────
+
+        const vaccEmail = localStorage.getItem("vaccinatorEmail");
+        const centerId = localStorage.getItem("vaccinatorCenterId");
+        const vaccName = localStorage.getItem("vaccinatorName");
+
+        if (!vaccEmail || !centerId) {
+            window.location.href = "login.html";
+        }
+
+        function maskAadhaar(id) {
+            const s = String(id || "").replace(/\s+/g, "");
+            if (!s) return "XXXX XXXX XXXX";
+            const last4 = s.slice(-4);
+            return `XXXX XXXX ${last4}`;
+        }
+
+        function initialsFromName(name) {
+            const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+            const first = parts[0]?.[0] || "V";
+            const second = parts.length > 1 ? parts[1][0] : (parts[0]?.[1] || "");
+            return (first + second).toUpperCase();
+        }
+
+        function formatDate(d) {
+            if (!d) return "-";
+            const dt = new Date(d);
+            if (isNaN(dt.getTime())) return "-";
+            return dt.toDateString();
+        }
+
+        async function loadVaccinatorProfile() {
+            const res = await fetch(`${API_BASE_URL}/vaccinator/profile/${encodeURIComponent(vaccEmail)}`);
+            if (!res.ok) throw new Error("Failed to load profile");
+            return await res.json();
+        }
+
+        async function loadSummary() {
+            const res = await fetch(`${API_BASE_URL}/vaccinator/summary/${encodeURIComponent(centerId)}`);
+            if (!res.ok) throw new Error("Failed to load summary");
+            return await res.json();
+        }
+
+        async function loadRecentSessions() {
+            const res = await fetch(`${API_BASE_URL}/vaccinator/recent-sessions/${encodeURIComponent(centerId)}`);
+            if (!res.ok) throw new Error("Failed to load recent sessions");
+            return await res.json();
+        }
+
+        async function init() {
+            try {
+                const [profile, summary, recent] = await Promise.all([
+                    loadVaccinatorProfile(),
+                    loadSummary(),
+                    loadRecentSessions()
+                ]);
+
+                const displayName = profile.fullName || vaccName || "Vaccinator";
+                const displayRole = profile.designation || "Vaccinator";
+                const displayCenter = profile.centerName || profile.centerId || centerId;
+
+                // Sidebar
+                const sidebarAvatar = document.querySelector(".vaccinator-profile .profile-img");
+                if (sidebarAvatar) {
+                    applyAvatar(sidebarAvatar, "vaccinator");
+                }
+                document.querySelector(".vaccinator-profile .profile-info h4").innerText = displayName;
+
+                // Header card
+                const headerAvatar = document.getElementById("headerInitials");
+                if (headerAvatar) {
+                    applyAvatar(headerAvatar, "vaccinator");
+                }
+                document.getElementById("headerName").innerText = displayName;
+                // Update these lines inside your init() function in profile.html
+                document.getElementById("headerPhone").innerText = `Phone: ${profile.phone || "Not Provided"}`;
+                document.getElementById("headerAadhaar").innerText = `Vaccinator ID: ${profile.vaccinatorID || "N/A"}`;
+
+                // Details card
+                document.getElementById("detailName").innerText = displayName;
+                document.getElementById("detailRole").innerText = displayRole;
+                document.getElementById("detailCenter").innerText = displayCenter;
+                document.getElementById("detailSessions").innerText = String(summary.totalSessionsConducted ?? 0);
+                document.getElementById("detailChildren").innerText = String(summary.totalChildrenVaccinated ?? 0);
+
+                // Last session card
+                document.getElementById("lastSessionDate").innerText = formatDate(summary.lastSessionDate);
+                document.getElementById("lastSessionLocation").innerText = displayCenter;
+                document.getElementById("lastSessionChildren").innerText = String(summary.totalChildrenVaccinated ?? 0);
+
+                const list = document.getElementById("recentSessionsList");
+                list.innerHTML = "";
+                if (!recent || recent.length === 0) {
+                    list.innerHTML = `<div class="activity-item" style="padding: 12px 5px; border-bottom: 1px solid #f9f9f9;"><div class="activity-bullet"></div> No recent sessions</div>`;
+                } else {
+                    recent.forEach(item => {
+                        const row = document.createElement("div");
+                        row.className = "activity-item";
+                        row.style.cssText = "padding: 12px 5px; border-bottom: 1px solid #f9f9f9;";
+                        row.innerHTML = `<div class="activity-bullet"></div> ${item.childName || "Child"} — ${item.vaccineName || "Vaccine"} (${formatDate(item.date)})`;
+                        list.appendChild(row);
+                    });
+                }
+
+                // Summary card (right) — keep layout same; update the 4 values in-place
+                const summarySpans = document.querySelectorAll(".grid-right .card .info-list .info-item span");
+                // Order in markup: sessions, children, last session, assigned center
+                if (summarySpans[0]) summarySpans[0].innerText = String(summary.totalSessionsConducted ?? 0);
+                if (summarySpans[1]) summarySpans[1].innerText = String(summary.totalChildrenVaccinated ?? 0);
+                if (summarySpans[2]) summarySpans[2].innerText = formatDate(summary.lastSessionDate);
+                if (summarySpans[3]) summarySpans[3].innerText = displayCenter;
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to load vaccinator profile data.");
+            }
+        }
+
+        init();
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+
+</html>

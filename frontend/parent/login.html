@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Authentication - VacciLink</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body class="split-auth-page">
+
+    <div class="split-auth-container">
+
+        <!-- Left Section -->
+
+        <div class="split-auth-left">
+
+            <div class="left-content">
+
+                <h1 class="brand-title">Protect Every Little Life</h1>
+
+                <p class="brand-subtitle">
+                    Never miss an important vaccine. Monitor your child's health journey with smart reminders and
+                    digital records.
+                </p>
+
+                <div class="brand-illustration">
+                    <img src="../images/indian_doctor_baby.jpg" alt="Parents holding a baby" class="illustration-img">
+                </div>
+
+                <div class="brand-badge">
+
+                    <div class="badge-icon">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+
+                    </div>
+
+                    <span>Verified Digital Health Records Integrated with National Standards.</span>
+
+                </div>
+
+            </div>
+
+            <div class="left-footer-links">
+                &copy; 2026 Child Vaccination Tracker. All rights reserved.
+
+                <div class="footer-links-right">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact Support</a>
+                    <a href="../index.html#faq">FAQ</a>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right Section -->
+
+        <div class="split-auth-right">
+
+            <div class="right-content">
+
+                <div class="split-auth-tabs">
+
+                    <button class="split-tab active" id="split-tab-login" onclick="switchSplitTab('login')">
+                        Login
+                    </button>
+
+                    <button class="split-tab" id="split-tab-signup" onclick="switchSplitTab('signup')">
+                        Sign Up
+                    </button>
+
+                </div>
+
+                <!-- SIGNUP FORM -->
+
+                <div id="split-form-signup" class="split-form-container" style="display:none;">
+
+                    <div class="form-header">
+
+                        <h2>Create your account</h2>
+
+                        <p>Enter the details of the mother and child to begin tracking.</p>
+
+                    </div>
+
+                    <form class="modern-form" onsubmit="signup(event)">
+
+                        <h4 class="form-section-title">MATERNAL INFORMATION</h4>
+
+                        <div class="form-row two-col">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Mother's Name</label> <input name="parentName" type="text" required
+                                    placeholder="Full legal name">
+
+                            </div>
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Mother's Aadhaar Number</label> <input name="parentAadhar" type="text" required
+                                    placeholder="12-digit number">
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group modern-form-group" style="max-width:50%;">
+
+                                <label>Mother's Date of Birth</label> <input name="motherDOB" type="date" required>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input name="phone" type="tel" id="phone" placeholder="Enter parent's phone number"
+                                    required>
+                            </div>
+                        </div>
+
+                        <h4 class="form-section-title">PATERNAL INFORMATION</h4>
+
+                        <div class="form-row two-col">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Father's Name</label> <input type="text" required placeholder="Full legal name">
+
+                            </div>
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Father's Date of Birth</label> <input type="date" required>
+
+                            </div>
+
+                        </div>
+
+                        <h4 class="form-section-title">BABY's BIRTH DETAILS</h4>
+
+                        <div class="form-row two-col">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Baby's Name</label> <input name="childName" type="text" required
+                                    placeholder="Legal name (if named)">
+
+                            </div>
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Baby's Date of Birth</label> <input name="childDOB" type="date" required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Child Gender</label>
+                                <select name="gender" required
+                                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Hospital Name</label> <input name="hospital" type="text" required
+                                    placeholder="Hospital where baby was born">
+
+                            </div>
+
+                        </div>
+
+                        <h4 class="form-section-title">CONTACT & SECURITY</h4>
+
+                        <div class="form-row">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Permanent Address</label> <input name="address" type="text" required
+                                    placeholder="Full residential block/address">
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-row two-col">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>City</label> <input name="city" type="text" required placeholder="Enter City">
+
+                            </div>
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Pincode</label> <input name="pincode" type="text" required
+                                    placeholder="Enter Pincode">
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-row two-col">
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Email</label> <input name="email" type="email" required>
+
+                            </div>
+
+                            <div class="form-group modern-form-group">
+
+                                <label>Password</label> <input name="password" type="password" required>
+
+                            </div>
+
+                        </div>
+
+                        <button type="submit" class="btn btn-blue btn-large split-submit-btn">
+                            Create Account
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <!-- LOGIN FORM -->
+
+                <div id="split-form-login" class="split-form-container active-form">
+
+                    <div class="form-header">
+
+                        <h2>Welcome back</h2>
+                        <p>Login to your account to view vaccination schedules.</p>
+
+                    </div>
+
+                    <form class="modern-form" onsubmit="login(event)">
+
+                        <div class="form-group modern-form-group">
+
+                            <label>Email</label> <input id="loginEmail" type="text" required
+                                placeholder="name@domain.com">
+
+                        </div>
+
+                        <div class="form-group modern-form-group">
+
+                            <label>Password</label> <input id="loginPassword" type="password" placeholder="••••••••">
+
+                        </div>
+
+                        <div class="form-group modern-form-group">
+
+                            <label>OTP</label> <input id="loginOTP" type="text" placeholder="Enter OTP">
+
+                        </div>
+
+                        <button type="button" onclick="sendOTP()" class="btn btn-outline">
+                            Send OTP
+                        </button>
+
+                        <button type="submit" class="btn btn-blue btn-large split-submit-btn">
+                            Login
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="../js/script.js"></script>
+
+    <script>
+
+        async function signup(e) {
+
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const res = await fetch("http://localhost:3000/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            alert(result.message);
+
+            if (result.message === "Signup successful") {
+                localStorage.setItem("parentEmail", data.email);
+                window.location.href = "dashboard.html";
+            }
+
+        }
+
+        async function sendOTP() {
+
+            const email = document.getElementById("loginEmail").value;
+
+            if (!email) {
+                alert("Enter email first");
+                return;
+            }
+
+            await fetch("http://localhost:3000/send-otp", {
+
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+
+            });
+
+            alert("OTP sent to your email");
+
+        }
+
+
+        async function login(e) {
+
+            e.preventDefault();
+
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+            const otp = document.getElementById("loginOTP").value;
+
+            if (otp) {
+
+                const res = await fetch("http://localhost:3000/verify-otp", {
+
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, otp })
+
+                });
+
+                const data = await res.json();
+
+                if (data.verified) {
+
+                    localStorage.setItem("parentEmail", email);
+                    if (data.childID) localStorage.setItem("childID", data.childID);
+                    window.location.href = "dashboard.html";
+
+                } else {
+
+                    alert("Invalid OTP");
+
+                }
+
+            } else {
+
+                const res = await fetch("http://localhost:3000/login", {
+
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+
+                });
+
+                const data = await res.json();
+
+                console.log("LOGIN RESPONSE:", data); // ← check this in browser console
+
+                if (data && !data.message) {
+
+                    localStorage.setItem("parentEmail", data.email);
+                    localStorage.setItem("childID", data.childID || "");
+                    localStorage.setItem("user", JSON.stringify(data)); // ← stores full user object
+                    window.location.href = "dashboard.html";
+
+                } else {
+
+                    alert(data.message || "Invalid Email or Password");
+
+                }
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>

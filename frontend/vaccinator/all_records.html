@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Child Records - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <script src="../js/avatars.js"></script>
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-green);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        /* Excel-like Table Styling */
+        .table-container {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Softer shadow */
+            scroll-behavior: smooth; /* Smooth scroll */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem; /* Slightly larger for readability */
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: #f8faf8;
+            color: var(--primary-green);
+            font-weight: 700;
+            text-align: left;
+            padding: 18px 20px;
+            z-index: 10;
+            border-bottom: 2px solid #e8f5e9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        tbody td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f9f9f9;
+            color: #333;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafdfa;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f7f0;
+            cursor: pointer;
+        }
+
+        /* Status Badge Colors - Polished */
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+        }
+        .status-vaccinated { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+        .status-pending { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+        .status-missed { background: #ffebee; color: #b71c1c; border: 1px solid #ffcdd2; }
+
+        /* Hide rows when filtering */
+        .hidden-row {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <a href="profile.html" class="back-btn">
+            <svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" fill="none"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to Profile
+        </a>
+
+        <header class="page-header">
+            <div>
+                <h1>Full Vaccination Records</h1>
+                <p style="color: var(--text-muted);">Comprehensive view of all children in PHC Mumbai</p>
+            </div>
+        </header>
+
+        <!-- Search + Filter Row -->
+        <div class="controls-row">
+            <div class="search-box" style="margin-bottom: 0; flex: 1;">
+                <svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="nameSearch" placeholder="Search by child name..." onkeyup="filterTable()">
+            </div>
+            
+            <select id="statusFilter" class="filter-select" onchange="filterTable()">
+                <option value="all">All Statuses</option>
+                <option value="Vaccinated">Vaccinated</option>
+                <option value="Pending">Pending</option>
+                <option value="Missed">Missed</option>
+            </select>
+        </div>
+
+        <!-- Excel-like Scrollable Table Container -->
+        <div class="table-container">
+            <table id="recordsTable">
+                <thead>
+                    <tr>
+                        <th>Child Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Vaccine Name</th>
+                        <th>Vaccination Status</th>
+                        <th>Last Visit Date</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data Rows -->
+                    <tr>
+                        <td>Arya Yadav</td>
+                        <td>1.5 Years</td>
+                        <td>Female</td>
+                        <td>DPT Booster-1</td>
+                        <td><span class="status-pill status-vaccinated">Vaccinated</span></td>
+                        <td>March 20, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Rohan Sharma</td>
+                        <td>6 Months</td>
+                        <td>Male</td>
+                        <td>OPV 2</td>
+                        <td><span class="status-pill status-vaccinated">Vaccinated</span></td>
+                        <td>March 18, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Meera Singh</td>
+                        <td>1 Year</td>
+                        <td>Female</td>
+                        <td>Measles-1</td>
+                        <td><span class="status-pill status-vaccinated">Vaccinated</span></td>
+                        <td>March 15, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Rahul Verma</td>
+                        <td>2 Years</td>
+                        <td>Male</td>
+                        <td>Hepatitis B</td>
+                        <td><span class="status-pill status-pending">Pending</span></td>
+                        <td>January 12, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Ishani Gupta</td>
+                        <td>6 Months</td>
+                        <td>Female</td>
+                        <td>Polio-2</td>
+                        <td><span class="status-pill status-missed">Missed</span></td>
+                        <td>January 10, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Vivaan Reddy</td>
+                        <td>1 Year</td>
+                        <td>Male</td>
+                        <td>Vitamin A</td>
+                        <td><span class="status-pill status-vaccinated">Vaccinated</span></td>
+                        <td>Feb 20, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Suhana Khan</td>
+                        <td>9 Months</td>
+                        <td>Female</td>
+                        <td>PCV 3</td>
+                        <td><span class="status-pill status-vaccinated">Vaccinated</span></td>
+                        <td>Feb 18, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Kabir Das</td>
+                        <td>3 Years</td>
+                        <td>Male</td>
+                        <td>DPT Booster-2</td>
+                        <td><span class="status-pill status-pending">Pending</span></td>
+                        <td>March 05, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Ananya Roy</td>
+                        <td>4 Months</td>
+                        <td>Female</td>
+                        <td>Rotateq 2</td>
+                        <td><span class="status-pill status-vaccinated">Vaccinated</span></td>
+                        <td>March 21, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Zaid Khan</td>
+                        <td>2.5 Years</td>
+                        <td>Male</td>
+                        <td>MMR 2</td>
+                        <td><span class="status-pill status-missed">Missed</span></td>
+                        <td>Dec 15, 2025</td>
+                    </tr>
+                    <!-- Add more dummy rows to demonstrate scrolling -->
+                    <tr><td>Avni Patil</td><td>11 Months</td><td>Female</td><td>BCG</td><td><span class="status-pill status-vaccinated">Vaccinated</span></td><td>Jan 05, 2026</td></tr>
+                    <tr><td>Dev Kumar</td><td>7 Months</td><td>Male</td><td>Pentavalent 3</td><td><span class="status-pill status-vaccinated">Vaccinated</span></td><td>Feb 10, 2026</td></tr>
+                    <tr><td>Diya Iyer</td><td>1.2 Years</td><td>Female</td><td>JE-1</td><td><span class="status-pill status-pending">Pending</span></td><td>Feb 15, 2026</td></tr>
+                    <tr><td>Arjun Mehra</td><td>2.1 Years</td><td>Male</td><td>Tdap</td><td><span class="status-pill status-vaccinated">Vaccinated</span></td><td>March 01, 2026</td></tr>
+                    <tr><td>Siya Gupta</td><td>5 Months</td><td>Female</td><td>IPV 2</td><td><span class="status-pill status-vaccinated">Vaccinated</span></td><td>March 12, 2026</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 20px; color: var(--text-muted); font-size: 0.85rem;">
+            <p><strong>Info:</strong> Use the scrollbar on the right to view all 1420 records. Header remains fixed for convenience.</p>
+        </div>
+    </main>
+
+    <script>
+        function filterTable() {
+            const nameInput = document.getElementById('nameSearch').value.toLowerCase();
+            const statusInput = document.getElementById('statusFilter').value;
+            const table = document.getElementById('recordsTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                let nameFound = false;
+                let statusFound = false;
+                
+                // Child Name is in the first column (index 0)
+                const nameCell = tr[i].getElementsByTagName('td')[0];
+                if (nameCell) {
+                    if (nameCell.textContent.toLowerCase().indexOf(nameInput) > -1) {
+                        nameFound = true;
+                    }
+                }
+
+                // Status text is in the 5th column (index 4)
+                const statusCell = tr[i].getElementsByTagName('td')[4];
+                if (statusCell) {
+                    const statusText = statusCell.textContent.trim();
+                    if (statusInput === 'all' || statusText === statusInput) {
+                        statusFound = true;
+                    }
+                }
+
+                if (nameFound && statusFound) {
+                    tr[i].classList.remove('hidden-row');
+                } else {
+                    tr[i].classList.add('hidden-row');
+                }
+            }
+        }
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+</html>

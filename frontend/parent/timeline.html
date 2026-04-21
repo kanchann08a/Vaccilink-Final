@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccination Timeline - VacciLink</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <style>
+        .timeline-container {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--light-blue);
+        }
+
+        .timeline-event {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            border: 4px solid var(--white);
+            box-shadow: 0 0 0 2px var(--primary-blue);
+        }
+
+        .event-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #f0f3f8;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(42, 82, 152, 0.12);
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius, 16px);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-muted, #7f8c8d);
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark, #2c3e50);
+        }
+
+        .modal-title {
+            color: var(--primary-blue, #0277bd);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .modal-info-row {
+            margin-bottom: 15px;
+        }
+
+        .modal-info-row strong {
+            color: var(--text-dark, #2c3e50);
+        }
+
+        .modal-info-row p {
+            color: var(--text-muted, #7f8c8d);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .modal-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-blue, #0277bd);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .modal-btn:hover {
+            background-color: #015a8f;
+        }
+
+        .event-card h4 {
+            margin-bottom: 5px;
+            color: var(--primary-blue);
+        }
+
+        .event-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="navbar-container"></div>
+
+
+
+    <main class="main-content">
+
+        <header class="top-bar">
+            <h2>Vaccination Timeline</h2>
+            <div class="user-actions">
+                <img src="../assets/images/parent-avatar.png" class="profile-avatar">
+            </div>
+        </header>
+
+
+        <section class="card">
+
+            <h3 id="childJourney">Child's Journey</h3>
+
+            <p class="text-muted">Tracking all vaccinations from birth.</p>
+
+            <div class="timeline-container" id="timelineContainer"></div>
+
+        </section>
+
+    </main>
+
+    <!-- Vaccine Info Modal -->
+    <div id="vaccineModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="window.closeModal()">&times;</button>
+            <h3 id="modalVaccineName" class="modal-title">Vaccine Name</h3>
+
+            <div class="modal-info-row">
+                <strong>Scheduled Date:</strong>
+                <p id="modalVaccineDate">N/A</p>
+            </div>
+
+            <div class="modal-info-row">
+                <strong>Purpose:</strong>
+                <p id="modalVaccineProtects">N/A</p>
+            </div>
+
+            <div class="modal-info-row">
+                <strong>Description:</strong>
+                <p id="modalVaccineDesc">N/A</p>
+            </div>
+
+            <div class="modal-info-row">
+                <strong>Side Effects:</strong>
+                <p id="modalVaccineSideEffects">N/A</p>
+            </div>
+
+            <div class="modal-info-row">
+                <strong>Dose Site:</strong>
+                <p id="modalVaccineSite">N/A</p>
+            </div>
+
+            <button id="rescheduleBtn" class="modal-btn" style="display:none;" onclick="">Reschedule
+                Appointment</button>
+        </div>
+    </div>
+
+
+    <script>
+
+        const email = localStorage.getItem("parentEmail");
+
+        if (!email) {
+            window.location.href = "login.html";
+        }
+
+        fetch("/parent/" + email)
+            .then(res => res.json())
+            .then(data => {
+
+                if (!data || !data._id) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                const childName = data.childName || "Child";
+
+                /* Parse childDOB safely without timezone shift */
+                const dobStr = data.childDOB || "";
+                const dobParts = dobStr.split("-");
+                const dob = dobParts.length === 3
+                    ? new Date(parseInt(dobParts[0]), parseInt(dobParts[1]) - 1, parseInt(dobParts[2]))
+                    : new Date();
+
+                document.getElementById("childJourney").innerText =
+                    childName + "'s Vaccination Journey";
+
+
+                function addDays(date, days) {
+                    const d = new Date(date);
+                    d.setDate(d.getDate() + days);
+                    return d;
+                }
+
+                function formatDate(date) {
+                    return date.toDateString();
+                }
+                const vaccineInfo = {
+                    "BCG": {
+                        purpose: "Prevents tuberculosis (TB)",
+                        description: "Protects against severe forms of TB in children.",
+                        sideEffects: "Mild swelling, small scar at injection site",
+                        doseSite: "Left upper arm"
+                    },
+                    "OPV-0": {
+                        purpose: "Prevents polio",
+                        description: "Oral vaccine given at birth to protect against poliovirus.",
+                        sideEffects: "Usually none",
+                        doseSite: "Oral drops"
+                    },
+                    "Hepatitis-B": {
+                        purpose: "Prevents Hepatitis B infection",
+                        description: "Protects the liver from Hepatitis B virus.",
+                        sideEffects: "Mild fever, soreness",
+                        doseSite: "Thigh"
+                    },
+                    "Vitamin K": {
+                        purpose: "Prevents bleeding disorders",
+                        description: "Helps blood clotting in newborn babies.",
+                        sideEffects: "Rare irritation",
+                        doseSite: "Thigh"
+                    },
+                    "Pentavalent-1": {
+                        purpose: "Protects against 5 diseases",
+                        description: "Diphtheria, Pertussis, Tetanus, Hep B, Hib",
+                        sideEffects: "Fever, swelling, irritability",
+                        doseSite: "Thigh"
+                    }
+                };
+
+                window.openModal = function (vaccine) {
+                    document.getElementById("modalVaccineName").innerText = vaccine.vaccineName;
+
+                    if (vaccine.status === "completed" && vaccine.dateTaken) {
+                        document.getElementById("modalVaccineDate").innerText = new Date(vaccine.dateTaken).toDateString();
+                    } else {
+                        document.getElementById("modalVaccineDate").innerText = vaccine.scheduledDate ? new Date(vaccine.scheduledDate).toDateString() : "N/A";
+                    }
+
+                    const info = vaccineInfo[vaccine.vaccineName] || {};
+
+                    document.getElementById("modalVaccineProtects").innerText =
+                        info.purpose || "Not available";
+
+                    document.getElementById("modalVaccineDesc").innerText =
+                        info.description || "No description available";
+
+                    document.getElementById("modalVaccineSideEffects").innerText =
+                        info.sideEffects || "Not available";
+
+                    document.getElementById("modalVaccineSite").innerText =
+                        info.doseSite || "Not available";
+
+                    const btn = document.getElementById("rescheduleBtn");
+                    if (vaccine.status === "overdue") {
+                        btn.style.display = "block";
+                        btn.onclick = () => window.location.href = `appointment.html?vaccineName=${encodeURIComponent(vaccine.vaccineName)}`;
+                    } else {
+                        btn.style.display = "none";
+                    }
+
+                    document.getElementById("vaccineModal").style.display = "flex";
+                };
+
+                window.closeModal = function () {
+                    document.getElementById("vaccineModal").style.display = "none";
+                };
+
+                window.onclick = function (event) {
+                    const modal = document.getElementById("vaccineModal");
+                    if (event.target === modal) {
+                        modal.style.display = "none";
+                    }
+                };
+
+                // ✅ Use ONLY backend-merged data from /child/:childID
+                fetch("/child/" + data.childID)
+                    .then(res => res.json())
+                    .then(childData => {
+                        const vaccines = (childData && childData.vaccinationHistory) ? childData.vaccinationHistory : [];
+
+                        function formatDate(dateStr) {
+                            if (!dateStr) return "";
+                            return new Date(dateStr).toDateString();
+                        }
+
+                        const container = document.getElementById("timelineContainer");
+                        container.innerHTML = "";
+
+                        if (vaccines.length === 0) {
+                            container.innerHTML = "<p style='color:#888;text-align:center;'>No vaccination records found.</p>";
+                            return;
+                        }
+
+                        // ✅ Group by `age` (from backend mergeHistory — NOT batchAge)
+                        const batchesMap = {};
+                        vaccines.forEach(v => {
+                            const key = v.age || "Extra Records";
+                            const groupDate = v.dueDate || v.scheduledDate || null;
+                            if (!batchesMap[key]) batchesMap[key] = { date: groupDate, vaccines: [] };
+                            batchesMap[key].vaccines.push(v);
+                        });
+
+                        // Sort groups in correct age order
+                        const ageOrder = ["At Birth", "6 Weeks", "10 Weeks", "14 Weeks", "9 Months", "16 Months"];
+                        const sortedKeys = Object.keys(batchesMap).sort((a, b) => {
+                            const ia = ageOrder.indexOf(a), ib = ageOrder.indexOf(b);
+                            if (ia === -1 && ib === -1) return 0;
+                            if (ia === -1) return 1;
+                            if (ib === -1) return -1;
+                            return ia - ib;
+                        });
+
+                        sortedKeys.forEach(batchAge => {
+                            const batch = batchesMap[batchAge];
+
+                            const eventObj = document.createElement("div");
+                            eventObj.className = "timeline-event";
+
+                            const headerDate = batch.date ? ` — ${formatDate(batch.date)}` : "";
+                            let htmlStr = `<span class="event-date">${batchAge}${headerDate}</span>`;
+
+                            batch.vaccines.forEach((vaccine, idx) => {
+                                let statusColor = "#0277bd", statusText = "Upcoming";
+                                if (vaccine.status === "completed") {
+                                    statusColor = "var(--tag-completed-text)"; statusText = "Completed";
+                                } else if (vaccine.status === "overdue") {
+                                    statusColor = "var(--tag-overdue-text)"; statusText = "Overdue";
+                                } else if (vaccine.status === "scheduled") {
+                                    statusColor = "var(--tag-scheduled-text)"; statusText = "Scheduled";
+                                }
+
+                                let hospitalText = "";
+                                let dateText = "";
+
+                                if (vaccine.status === "completed") {
+                                    // ✅ Completed → show dateTaken + hospital
+                                    if (vaccine.dateTaken) dateText = `<p style="font-size:0.85rem;margin-top:5px;color:#2e7d32">✅ Taken: ${formatDate(vaccine.dateTaken)}</p>`;
+                                    if (vaccine.hospital) hospitalText = `<p style="font-size:0.85rem;margin-top:5px;color:#555">🏥 ${vaccine.hospital}</p>`;
+                                } else if (vaccine.status === "scheduled") {
+                                    // ✅ Scheduled → show scheduledDate + hospital
+                                    if (vaccine.scheduledDate) dateText = `<p style="font-size:0.85rem;margin-top:5px;color:#555">📅 Appointment: ${formatDate(vaccine.scheduledDate)}</p>`;
+                                    if (vaccine.hospital) hospitalText = `<p style="font-size:0.85rem;margin-top:5px;color:#555">🏥 ${vaccine.hospital}</p>`;
+                                } else if (vaccine.status === "overdue") {
+                                    // ✅ Overdue → show missed due date
+                                    if (vaccine.dueDate) dateText = `<p style="font-size:0.85rem;margin-top:5px;color:#d32f2f">⚠️ Missed: ${formatDate(vaccine.dueDate)}</p>`;
+                                } else {
+                                    // ✅ Upcoming → show due date
+                                    if (vaccine.dueDate) dateText = `<p style="font-size:0.85rem;margin-top:5px;color:#555">📆 Due: ${formatDate(vaccine.dueDate)}</p>`;
+                                }
+
+                                htmlStr += `
+            <div class="event-card" style="border-left: 4px solid ${statusColor}; margin-top: 15px;" data-idx="${idx}">
+                <h4>${vaccine.vaccineName}</h4>
+                <p>Status: <span style="color:${statusColor};font-weight:600;">${statusText}</span></p>
+                ${dateText}
+                ${hospitalText}
+            </div>`;
+                            });
+
+                            eventObj.innerHTML = htmlStr;
+
+                            const cards = eventObj.querySelectorAll('.event-card');
+                            cards.forEach((c) => {
+                                const idx = parseInt(c.getAttribute("data-idx"));
+                                c.onclick = () => window.openModal(batch.vaccines[idx]);
+                            });
+
+                            container.appendChild(eventObj);
+                        });
+                    });
+
+            });
+
+    </script>
+
+    <script src="navbar-loader.js"></script>
+</body>
+
+</html>

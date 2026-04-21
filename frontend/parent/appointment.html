@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - VacciLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- Leaflet.js (OpenStreetMap map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #edf2f7;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .slot-btn {
+            padding: 10px;
+            border: 1px solid var(--primary-blue);
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .slot-btn.active {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .appointment-card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+        }
+
+        .center-id {
+            font-size: 12px;
+            color: gray;
+        }
+
+        .status.pending {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .status.completed,
+        .status.accepted {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        .status.rejected {
+            color: red;
+            font-weight: bold;
+        }
+
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-section h3 {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 8px;
+        }
+
+        .no-data {
+            color: #718096;
+            font-style: italic;
+            padding: 10px;
+        }
+
+        .past-box {
+            background: white;
+            padding: 16px;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            transition: all 0.3s;
+        }
+
+        .past-box:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            background: #f8fafc;
+        }
+
+        #pastAppointmentsContainer {
+            margin-top: 20px;
+        }
+
+        /* ── Nearby Hospitals section ── */
+        #nearbyHospitalsSection {
+            margin-top: 36px;
+        }
+
+        #nearbyHospitalsSection h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #hospitalSubtitle {
+            font-size: 0.82rem;
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        .hospital-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .hosp-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hosp-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #4a90d9, #38b2ac);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .hosp-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 144, 217, 0.15);
+        }
+
+        .hosp-card .hosp-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1a202c;
+            line-height: 1.3;
+        }
+
+        .hosp-card .hosp-addr {
+            font-size: 0.8rem;
+            color: #718096;
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .hosp-card .hosp-dist {
+            font-size: 0.78rem;
+            color: #4a90d9;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hosp-card .btn-select-hosp {
+            margin-top: 6px;
+            padding: 7px 14px;
+            border: 1.5px solid #4a90d9;
+            border-radius: 8px;
+            background: transparent;
+            color: #4a90d9;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+
+        .hosp-card .btn-select-hosp:hover,
+        .hosp-card .btn-select-hosp.selected {
+            background: #4a90d9;
+            color: #fff;
+        }
+
+        #hospitalLoadingMsg {
+            color: #718096;
+            font-style: italic;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #hospitalLoadingMsg .spin {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #cbd5e0;
+            border-top-color: #4a90d9;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Map */
+        #map {
+            height: 340px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            margin-top: 4px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            display: none;
+            /* shown after hospitals load */
+        }
+
+        #mapToggleBtn {
+            margin-top: 12px;
+            padding: 8px 18px;
+            border: 1.5px solid #38b2ac;
+            border-radius: 8px;
+            background: transparent;
+            color: #2c7a7b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        #mapToggleBtn:hover {
+            background: #e6fffa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="navbar-container"></div>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <h2>Book Appointment</h2>
+            <div class="user-actions">
+                <img src="../assets/images/parent-avatar.png" alt="User" class="profile-avatar">
+            </div>
+        </header>
+
+        <section class="card" style="max-width: 600px;">
+            <div class="form-group">
+                <label>Select Vaccine</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-syringe"></i>
+                    <select id="vaccineSelect" class="form-control">
+                        <option>MR-1 (Scheduled)</option>
+                        <option>OPV-3</option>
+                        <option>DPT Booster</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Select Date</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-calendar-event"></i>
+                    <input type="date" id="apptDate" class="form-control" value="2026-02-28">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Select Clinic</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-hospital"></i>
+                    <select id="clinicSelect" class="form-control">
+                        <option disabled selected>Loading nearby clinics…</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Available Time Slots</label>
+                <div class="slot-grid">
+                    <button class="slot-btn active">09:00 AM</button>
+                    <button class="slot-btn">10:00 AM</button>
+                    <button class="slot-btn">11:30 AM</button>
+                    <button class="slot-btn">02:00 PM</button>
+                    <button class="slot-btn">04:30 PM</button>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-full" onclick="bookAppointment()">Confirm Booking</button>
+        </section>
+
+        <!-- ── Nearby Hospitals & Map ── -->
+        <section id="nearbyHospitalsSection">
+            <h3><i class="bi bi-hospital-fill" style="color:#4a90d9;"></i> Nearby Hospitals &amp; Clinics</h3>
+            <p id="hospitalSubtitle">Fetching hospitals near your registered address…</p>
+
+            <div id="hospitalLoadingMsg">
+                <span class="spin"></span> Loading nearby facilities…
+            </div>
+
+            <div class="hospital-grid" id="hospitalCardsList"></div>
+
+            <button id="mapToggleBtn" onclick="toggleMap()">
+                <i class="bi bi-map"></i> Show Map
+            </button>
+            <div id="map"></div>
+        </section>
+
+        <div id="appointmentHistory" class="history-section">
+            <h3>All Appointments</h3>
+            <div id="allAppointments"></div>
+
+            <div class="past-box" onclick="loadPastAppointments()"
+                style="display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px dashed var(--primary-blue); background: var(--light-blue); color: var(--primary-blue);">
+                <i class="bi bi-folder"></i> View All Appointments
+            </div>
+            <div id="pastAppointmentsContainer" style="display:none;"></div>
+        </div>
+
+        <script>
+
+            const email = localStorage.getItem("parentEmail");
+            if (!email) window.location.href = "login.html";
+
+            let currentChildID = null;
+            let childDOB = null;
+            let leafletMap = null;
+            let mapVisible = false;
+            let currentLat = null;
+            let currentLon = null;
+            let currentParent = null;
+
+            /* ── Slot button toggle ── */
+            const slotButtons = document.querySelectorAll('.slot-btn');
+            slotButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    slotButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+
+            /* ── Fetch parent & bootstrap the page ── */
+            fetch("/parent/" + encodeURIComponent(email))
+                .then(res => res.json())
+                .then(parent => {
+                    if (!parent) { window.location.href = "login.html"; return; }
+
+                    currentParent = parent;
+                    currentChildID = parent.childID;
+                    childDOB = parent.childDOB;
+
+                    // Build full address from parent data
+                    const addrStr = buildAddress(parent);
+                    updateHospitalSubtitle(parent);
+
+                    // Fetch nearby clinics
+                    fetchNearbyClinics(addrStr);
+
+                    // Fetch vaccination history
+                    return fetch("/child/" + encodeURIComponent(parent.childID));
+                })
+                .then(res => res ? res.json() : null)
+                .then(childData => {
+                    if (!childData) return;
+                    const merged = childData.vaccinationHistory || [];
+                    populateVaccineDropdown(merged);
+                    loadAppointmentHistory(currentChildID);
+                });
+
+            /* ── Helpers ── */
+            function buildAddress(parent) {
+                return [parent.address, parent.city, parent.pincode]
+                    .filter(Boolean).join(", ");
+            }
+
+            function updateHospitalSubtitle(parent) {
+                const addr = buildAddress(parent);
+                const sub = document.getElementById("hospitalSubtitle");
+                if (sub) {
+                    sub.innerHTML = addr
+                        ? `Showing hospitals within <strong>5 km</strong> of <em>${addr}</em>`
+                        : 'Update your address in <a href="profile.html" style="color:#4a90d9;">Profile</a> to see nearby hospitals.';
+                }
+            }
+
+            function populateVaccineDropdown(merged) {
+                const select = document.getElementById("vaccineSelect");
+                select.innerHTML = "";
+                let foundUpcoming = false;
+
+                merged.sort((a, b) =>
+                    new Date(a.dueDate || a.scheduledDate) - new Date(b.dueDate || b.scheduledDate)
+                );
+
+                merged.forEach(v => {
+                    if (v.status === "completed" || v.status === "scheduled") return;
+                    if (v.status === "upcoming") {
+                        if (foundUpcoming) return;
+                        foundUpcoming = true;
+                    }
+                    const opt = document.createElement("option");
+                    opt.value = JSON.stringify({ name: v.vaccineName, dose: v.doseNumber });
+                    opt.innerText = v.status === "overdue"
+                        ? `${v.vaccineName}${v.doseNumber ? ' (Dose ' + v.doseNumber + ')' : ''} (Overdue)`
+                        : `${v.vaccineName}${v.doseNumber ? ' (Dose ' + v.doseNumber + ')' : ''} (Upcoming)`;
+                    select.appendChild(opt);
+                });
+
+                if (select.children.length === 0) {
+                    select.innerHTML = "<option disabled>All vaccines completed or scheduled</option>";
+                }
+            }
+
+            /* ── Nearby Clinics Fetch & Render ── */
+            async function fetchNearbyClinics(address) {
+                const clinicSelect = document.getElementById("clinicSelect");
+                const cardsList = document.getElementById("hospitalCardsList");
+                const loadingMsg = document.getElementById("hospitalLoadingMsg");
+                const toggleBtn = document.getElementById("mapToggleBtn");
+
+                if (!address) {
+                    loadingMsg.style.display = 'none';
+                    cardsList.innerHTML = `<p class="no-data">No address set. <a href="profile.html">Update your profile</a> to see nearby hospitals.</p>`;
+                    clinicSelect.innerHTML = "<option disabled selected>No address set</option>";
+                    return;
+                }
+
+                loadingMsg.style.display = 'flex';
+                cardsList.innerHTML = '';
+                clinicSelect.innerHTML = "<option disabled selected>Loading nearby clinics…</option>";
+
+                try {
+                    const res = await fetch(`/nearby-clinics/${encodeURIComponent(email)}`);
+                    if (!res.ok) throw new Error("Network response was not ok");
+                    
+                    const clinics = await res.json();
+
+                    loadingMsg.style.display = 'none';
+
+                    if (!Array.isArray(clinics) || clinics.length === 0) {
+                        cardsList.innerHTML = `<p class="no-data" style="grid-column:1/-1;">No hospitals found within 5 km. Try updating your city/address in <a href="profile.html">Profile</a>.</p>`;
+                        clinicSelect.innerHTML = "<option disabled>No clinics found nearby</option>";
+                        return;
+                    }
+
+                    // Populate dropdown (existing booking logic)
+                    clinicSelect.innerHTML = "";
+                    clinics.forEach((clinic, idx) => {
+                        const opt = document.createElement("option");
+                        const cleanName = clinic.name.replace(/^[A-Z]\s+/, '').trim();
+                        opt.value = clinic.centerId;
+                        opt.dataset.address = clinic.address || "";
+                        opt.dataset.hospital = cleanName;
+                        opt.dataset.index = idx;
+                        opt.innerText = `${cleanName} - ${clinic.distance || 'Nearby'}`;
+                        clinicSelect.appendChild(opt);
+                    });
+
+                    // Render cards
+                    renderHospitalCards(clinics);
+
+                    // Show map button
+                    toggleBtn.style.display = 'inline-block';
+
+                    // Init Leaflet map (hidden until toggled)
+                    const firstWithCoords = clinics.find(c => c.latitude && c.longitude);
+                    if (firstWithCoords) {
+                        currentLat = firstWithCoords.latitude;
+                        currentLon = firstWithCoords.longitude;
+                        initLeafletMap(clinics);
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    loadingMsg.style.display = 'none';
+                    cardsList.innerHTML = `<p class="no-data" style="color:red;">Error loading clinics. Please try again.</p>`;
+                    clinicSelect.innerHTML = "<option disabled>Error loading clinics</option>";
+                }
+            }
+
+            function renderHospitalCards(clinics) {
+                const list = document.getElementById("hospitalCardsList");
+                list.innerHTML = '';
+
+                clinics.forEach((clinic, idx) => {
+                    const card = document.createElement("div");
+                    card.className = "hosp-card";
+                    card.id = `hosp-card-${idx}`;
+
+                    const cleanName = clinic.name.replace(/^[A-Z]\s+/, '').trim();
+
+                    card.innerHTML = `
+                        <div class="hosp-name">${cleanName}</div>
+                        <div class="hosp-addr">
+                            <i class="bi bi-geo-alt-fill" style="color:#4a90d9; flex-shrink:0; margin-top:1px;"></i>
+                            <span>${clinic.address || '—'}</span>
+                        </div>
+                        <div class="hosp-dist">
+                            <i class="bi bi-signpost-split"></i>
+                            ${clinic.distance || 'Nearby'}
+                        </div>
+                        <button class="btn-select-hosp" id="btn-select-${idx}" onclick="selectHospital(${idx})">
+                            <i class="bi bi-check-circle"></i> Select
+                        </button>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+
+            function selectHospital(idx) {
+                // Highlight card & update clinic dropdown
+                document.querySelectorAll('.btn-select-hosp').forEach(b => b.classList.remove('selected'));
+                const btn = document.getElementById(`btn-select-${idx}`);
+                if (btn) {
+                    btn.classList.add('selected');
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Selected';
+                }
+
+                const clinicSelect = document.getElementById("clinicSelect");
+                const opt = [...clinicSelect.options].find(o => o.dataset.index == idx);
+                if (opt) clinicSelect.value = opt.value;
+
+                // Pan map to this marker
+                if (leafletMap) {
+                    const markers = leafletMap._layers;
+                    Object.values(markers).forEach(layer => {
+                        if (layer._popup) {
+                            const content = layer._popup.getContent();
+                            if (content && content.includes(`hosp-card-${idx}`.replace('hosp-card-', ''))) {
+                                leafletMap.panTo(layer.getLatLng());
+                                layer.openPopup();
+                            }
+                        }
+                    });
+                }
+            }
+
+            /* ── Leaflet Map ── */
+            function initLeafletMap(clinics) {
+                const mapDiv = document.getElementById("map");
+
+                // Destroy previous instance if any
+                if (leafletMap) {
+                    leafletMap.remove();
+                    leafletMap = null;
+                }
+
+                // Use first clinic's coords as center
+                const centerLat = clinics.find(c => c.latitude)?.latitude || 18.5;
+                const centerLon = clinics.find(c => c.longitude)?.longitude || 73.8;
+
+                leafletMap = L.map("map").setView([centerLat, centerLon], 13);
+
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 19
+                }).addTo(leafletMap);
+
+                // User location marker (blue)
+                if (currentLat && currentLon) {
+                    const userIcon = L.divIcon({
+                        html: `<div style="background:#4a90d9;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 6px rgba(74,144,217,.7);"></div>`,
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7],
+                        className: ''
+                    });
+                    L.marker([currentLat, currentLon], { icon: userIcon })
+                        .addTo(leafletMap)
+                        .bindPopup("<strong>Your Location</strong>");
+                }
+
+                // Hospital markers
+                clinics.forEach((clinic, idx) => {
+                    if (!clinic.latitude || !clinic.longitude) return;
+                    const cleanName = clinic.name.replace(/^[A-Z]\s+/, '').trim();
+                    const hospIcon = L.divIcon({
+                        html: `<div style="background:#38b2ac;color:white;width:26px;height:26px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.3);">🏥</div>`,
+                        iconSize: [26, 26],
+                        iconAnchor: [13, 26],
+                        popupAnchor: [0, -28],
+                        className: ''
+                    });
+
+                    L.marker([clinic.latitude, clinic.longitude], { icon: hospIcon })
+                        .addTo(leafletMap)
+                        .bindPopup(`
+                            <strong>${cleanName}</strong><br>
+                            <small>${clinic.address || ''}</small><br>
+                            <small style="color:#4a90d9;">${clinic.distance || 'Nearby'}</small><br>
+                            <button onclick="selectHospital(${idx})"
+                                style="margin-top:6px;padding:4px 10px;background:#4a90d9;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">
+                                Select
+                            </button>
+                        `);
+                });
+            }
+
+            function toggleMap() {
+                const mapDiv = document.getElementById("map");
+                const btn = document.getElementById("mapToggleBtn");
+                mapVisible = !mapVisible;
+
+                if (mapVisible) {
+                    mapDiv.style.display = 'block';
+                    btn.innerHTML = '<i class="bi bi-map-fill"></i> Hide Map';
+                    // Leaflet needs resize trigger when made visible
+                    if (leafletMap) setTimeout(() => leafletMap.invalidateSize(), 100);
+                } else {
+                    mapDiv.style.display = 'none';
+                    btn.innerHTML = '<i class="bi bi-map"></i> Show Map';
+                }
+            }
+
+            /* ── Dynamic refresh when parent updates location ── */
+            window.addEventListener("parentLocationUpdated", (e) => {
+                const { fullAddress } = e.detail;
+                const sub = document.getElementById("hospitalSubtitle");
+                if (sub && fullAddress) {
+                    sub.innerHTML = `Showing hospitals within <strong>5 km</strong> of <em>${fullAddress}</em>`;
+                }
+                // Re-fetch with new address
+                fetchNearbyClinics(fullAddress || e.detail.address);
+            });
+
+            /* ── Appointment History ── */
+            async function loadAppointmentHistory(childID) {
+                const container = document.getElementById("allAppointments");
+                container.innerHTML = "<p class='no-data'>Loading current appointments...</p>";
+                container.className = "appointment-list";
+
+                try {
+                    const res = await fetch(`/child/${childID}`);
+                    const data = await res.json();
+                    const current = (data.vaccinationHistory || []).filter(v => v.status === "scheduled");
+
+                    container.innerHTML = "";
+                    if (current.length === 0) {
+                        container.innerHTML = "<p class='no-data'>No active appointments found.</p>";
+                        return;
+                    }
+                    renderCards(current, container);
+                } catch (err) {
+                    container.innerHTML = "<p class='no-data'>Could not load appointments.</p>";
+                }
+            }
+
+            function renderCards(data, container) {
+                data.forEach(appt => {
+                    const card = document.createElement("div");
+                    card.className = "appointment-card";
+                    card.innerHTML = `
+                        <div class="hospital-icon"><i class="bi bi-hospital"></i></div>
+                        <div class="appointment-details">
+                            <h4>${appt.hospital || "Hospital"}</h4>
+                            <div class="detail-line"><i class="bi bi-geo-alt"></i><span>${appt.hospitalAddress || "Address not provided"}</span></div>
+                            <div class="detail-line"><i class="bi bi-syringe"></i><span>${appt.vaccineName}</span></div>
+                            <div class="detail-line"><i class="bi bi-calendar-event"></i><span>${new Date(appt.scheduledDate || appt.appointmentDate).toDateString()}</span></div>
+                        </div>
+                        <div class="appointment-status">
+                            <span class="status-badge ${appt.status}">${appt.status}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            async function loadPastAppointments() {
+                const childID = currentChildID;
+                if (!childID) { alert("Unable to fetch past appointments. Child ID is missing."); return; }
+
+                try {
+                    const res = await fetch(`/appointments/past/${childID}`);
+                    if (!res.ok) throw new Error(`API returned status ${res.status}`);
+
+                    const data = await res.json();
+                    const container = document.getElementById("pastAppointmentsContainer");
+                    container.style.display = "flex";
+                    container.className = "appointment-list";
+                    container.style.marginTop = "20px";
+                    container.innerHTML = "";
+
+                    if (!data || data.length === 0) {
+                        container.innerHTML = `<p class="no-data">No past appointments found</p>`;
+                        return;
+                    }
+                    renderCards(data, container);
+                    container.scrollIntoView({ behavior: "smooth" });
+                } catch (err) {
+                    const container = document.getElementById("pastAppointmentsContainer");
+                    if (container) {
+                        container.style.display = "block";
+                        container.innerHTML = `<p class="no-data" style="color:red;">Error loading past appointments</p>`;
+                    }
+                }
+            }
+
+            /* ── Book Appointment ── */
+            async function bookAppointment() {
+                const vaccineSelect = document.getElementById("vaccineSelect");
+                if (vaccineSelect.selectedIndex < 0 || vaccineSelect.children[0]?.disabled) {
+                    return alert("Please select a valid vaccine");
+                }
+
+                const vaccineData = JSON.parse(vaccineSelect.value);
+                const dateInput = document.getElementById("apptDate").value;
+                const clinicSelect = document.getElementById("clinicSelect");
+
+                if (clinicSelect.selectedIndex < 0 || clinicSelect.children[0]?.disabled) {
+                    return alert("Please select a clinic");
+                }
+
+                const selectedOption = clinicSelect.options[clinicSelect.selectedIndex];
+                const centerId = selectedOption.value;
+                const hospital = selectedOption.dataset.hospital || selectedOption.text.split(" - ")[0];
+                const hospitalAddress = selectedOption.dataset.address || "";
+
+                if (!dateInput) return alert("Please select appointment date");
+
+                const activeSlot = document.querySelector('.slot-btn.active');
+                const apptTime = activeSlot ? activeSlot.textContent.trim() : "";
+
+                const payload = {
+                    childID: currentChildID,
+                    vaccineName: vaccineData.name,
+                    doseNumber: vaccineData.dose,
+                    scheduledDate: dateInput,
+                    hospital,
+                    hospitalAddress,
+                    centerId,
+                    status: "scheduled",
+                    appointmentTime: apptTime
+                };
+
+                const res = await fetch("/vaccination/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                alert(data.message);
+                loadAppointmentHistory(currentChildID);
+                document.getElementById("appointmentHistory").scrollIntoView({ behavior: "smooth" });
+            }
+        </script>
+        <script src="navbar-loader.js"></script>
+    </main>
+</body>
+
+</html>

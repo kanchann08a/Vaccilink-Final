@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccinator Session - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        .month-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .month-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 70%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .child-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .child-list-table th, .child-list-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8f5e9;
+        }
+        .child-list-table th {
+            background-color: var(--light-green);
+            position: sticky;
+            top: 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .status-badge.today    { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .status-badge.upcoming { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+        .status-badge.overdue  { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+    </style>
+</head>
+<body>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="welcome-header">
+            <h1>Vaccination Sessions</h1>
+            <p>Children due today, within 5 days, or overdue within 30 days</p>
+        </header>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+            <div id="monthCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                <!-- Dynamic Month Cards will be inserted here -->
+                <div style="text-align:center; padding:50px; grid-column: 1/-1; color:var(--text-muted);">Loading monthly sessions...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Children List -->
+    <div id="childModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle" style="color: var(--primary-green);">Upcoming Children</h3>
+            <table class="child-list-table">
+                <thead>
+                    <tr>
+                        <th>Child Name</th>
+                        <th>ID</th>
+                        <th>Vaccine</th>
+                        <th>Dose</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="modalTableBody">
+                    <!-- Data here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let monthlyData = [];
+
+        async function fetchMonthlyData() {
+            try {
+                const res = await fetch('/vaccinator/monthly');
+                monthlyData = await res.json();
+                renderMonthCards(monthlyData);
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        }
+
+        function renderMonthCards(data) {
+            const grid = document.getElementById('monthCardsGrid');
+            grid.innerHTML = '';
+
+            if (data.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; padding:50px; grid-column: 1/-1; color:var(--text-muted);">No upcoming vaccinations found</div>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const todayCount    = item.children.filter(c => c.sessionStatus === 'Today').length;
+                const upcomingCount = item.children.filter(c => c.sessionStatus === 'Upcoming').length;
+                const overdueCount  = item.children.filter(c => c.sessionStatus === 'Overdue').length;
+
+                const card = document.createElement('div');
+                card.className = 'card month-card';
+                card.onclick = () => openModal(index);
+                card.innerHTML = `
+                    <h3 style="color: var(--primary-green); margin-bottom: 10px;">${item.month}</h3>
+                    <p style="font-size: 1.05rem; margin-bottom: 10px;">Total: <strong>${item.count}</strong></p>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        ${todayCount    ? `<span class="status-badge today">Today: ${todayCount}</span>`       : ''}
+                        ${upcomingCount ? `<span class="status-badge upcoming">Upcoming: ${upcomingCount}</span>` : ''}
+                        ${overdueCount  ? `<span class="status-badge overdue">Overdue: ${overdueCount}</span>`   : ''}
+                    </div>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 10px;">(Click to view details)</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openModal(index) {
+            const item = monthlyData[index];
+            const modal = document.getElementById('childModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalTableBody');
+
+            title.innerText = `Vaccination Sessions — ${item.month}`;
+            body.innerHTML = '';
+
+            // Sort within modal: Today → Upcoming → Overdue
+            const order = { 'Today': 0, 'Upcoming': 1, 'Overdue': 2 };
+            const sorted = [...item.children].sort((a, b) => (order[a.sessionStatus] ?? 9) - (order[b.sessionStatus] ?? 9));
+
+            sorted.forEach(child => {
+                const st = child.sessionStatus || '';
+                const badgeClass = st === 'Today' ? 'today' : st === 'Upcoming' ? 'upcoming' : 'overdue';
+                const daysLabel = st === 'Today' ? 'Today'
+                    : st === 'Upcoming' ? `In ${child.daysDiff}d`
+                    : `${Math.abs(child.daysDiff)}d ago`;
+                const row = `<tr>
+                    <td>${child.childName}</td>
+                    <td>#${child.childID}</td>
+                    <td>${child.vaccineName}</td>
+                    <td>${child.doseNumber ?? '—'}</td>
+                    <td>${child.date}</td>
+                    <td><span class="status-badge ${badgeClass}">${st} (${daysLabel})</span></td>
+                </tr>`;
+                body.innerHTML += row;
+            });
+
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('childModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('childModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        fetchMonthlyData();
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+</html>

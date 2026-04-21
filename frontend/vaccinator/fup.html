@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost to Follow-Up - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        .child-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .child-list-table th, .child-list-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e8f5e9;
+        }
+        .child-list-table th {
+            background-color: var(--light-green);
+        }
+        .missed-entry {
+            background-color: #ffebee;
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="welcome-header">
+            <h1>Lost to Follow-Up</h1>
+            <p>Track and manage children who have missed or overdue vaccinations</p>
+        </header>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+            <div class="card">
+                <h3>Children with Overdue / Missed Vaccinations</h3>
+                
+                <table class="child-list-table">
+                    <thead>
+                        <tr>
+                            <th>Child Name</th>
+                            <th>Age Group</th>
+                            <th>Vaccine (Dose)</th>
+                            <th>Last Visit</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="followupTableBody">
+                        <tr><td colspan="6" style="text-align:center; padding:20px;">Loading follow-up data...</td></tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+                  <button class="btn btn-primary" onclick="exportToCSV()" style="padding: 12px 25px;">Export Follow-Up List (CSV)</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let followupData = [];
+
+        async function fetchFollowupData() {
+            try {
+                const res = await fetch('/vaccinator/followup');
+                followupData = await res.json();
+                renderFollowup(followupData);
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        }
+
+        function renderFollowup(data) {
+            const body = document.getElementById('followupTableBody');
+            body.innerHTML = '';
+
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No children currently lost to follow-up</td></tr>';
+                return;
+            }
+
+            data.forEach((child, index) => {
+                const row = document.createElement('tr');
+                if (child.status === 'Overdue') row.className = 'missed-entry';
+                
+                row.innerHTML = `
+                    <td>${child.childName}<br/><small>ID: #${child.childID}</small></td>
+                    <td>${child.age}</td>
+                    <td>${child.vaccineName} (Dose ${child.doseNumber})</td>
+                    <td>${child.lastVisitDate}</td>
+                    <td><span class="status-badge overdue">${child.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="sendReminder(${index}, this)">Send Reminder</button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        async function sendReminder(index, btn) {
+            const child = followupData[index];
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/vaccinator/send-reminder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        childID: child.childID,
+                        childName: child.childName,
+                        parentEmail: child.parentEmail,
+                        vaccineName: child.vaccineName,
+                        doseNumber: child.doseNumber,
+                        dueDate: child.dueDate,
+                        hospitalName: child.hospitalName,
+                        centerId: child.centerId
+                    })
+                });
+                const result = await res.json();
+                alert(result.message);
+                btn.innerText = 'Sent';
+                btn.style.backgroundColor = '#66bb6a';
+            } catch (err) {
+                console.error("Reminder error:", err);
+                alert("Failed to send reminder");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function exportToCSV() {
+            if (followupData.length === 0) return alert("No data to export");
+
+            let csv = "Child Name,Child ID,Age Group,Vaccine,Dose,Due Date,Last Visit,Parent Email,Parent Phone,Status\n";
+            followupData.forEach(c => {
+                csv += `"${c.childName}","${c.childID}","${c.age}","${c.vaccineName}","${c.doseNumber}","${c.dueDate}","${c.lastVisitDate}","${c.parentEmail}","${c.parentPhone}","${c.status}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'followup_list.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        fetchFollowupData();
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+</html>

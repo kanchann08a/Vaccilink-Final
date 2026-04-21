@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccinator Authentication - VacciLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="vacc-split-page">
+
+    <div class="vacc-split-container">
+        <!-- Left Section (Green Panel) -->
+        <div class="vacc-split-left">
+            <div class="vacc-left-content">
+                <div class="vacc-brand-logo">
+                    <div class="vacc-logo-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <span class="vacc-logo-text">VacciLink</span>
+                </div>
+
+                <h1 class="vacc-brand-title">Join the Frontline of Child Protection.</h1>
+                <p class="vacc-brand-subtitle">Manage pediatric vaccinations with precision, empathy, and administrative
+                    ease. Your expertise, our platform.</p>
+
+                <div class="brand-illustration" style="margin-top: 30px;">
+                    <img src="../images/hero_indian_vaccination.jpg" alt="Healthcare professionals team"
+                        class="illustration-img" style="width: 100%; border-radius: 12px; object-fit: cover;">
+                </div>
+
+                <div class="brand-badge"
+                    style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); margin-top: 30px;">
+                    <div class="badge-icon" style="color: #498661;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem;">Verified Professional</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8;">Authorized Medical Access</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vacc-left-footer">
+                &copy; 2026 Child Vaccination Management System. All rights reserved.
+                <div class="vacc-footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Support</a>
+                    <a href="#">Contact Us</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section (Login Form) -->
+        <div class="vacc-split-right">
+            <div class="vacc-right-content">
+
+                <!-- Toggle Tabs -->
+                <div class="vacc-auth-tabs">
+                    <!-- For now, we only implement the Login form as requested in the instructions, but we include the tabs for UI completeness -->
+                    <button class="vacc-tab active" onclick="location.href='login.html'">Login</button>
+                    <button class="vacc-tab" onclick="location.href='request_access.html'">Register</button>
+                </div>
+
+                <div class="vacc-form-container">
+                    <div class="vacc-form-header">
+                        <h2>Welcome Back</h2>
+                        <p>Enter your professional credentials to continue.</p>
+                    </div>
+
+                    <form class="vacc-modern-form">
+
+                        <div class="vacc-form-group">
+                            <label>Vaccinator ID / Employee ID</label>
+                            <div class="vacc-input-wrapper">
+                                <input type="text" required placeholder="VX-9920-A">
+                            </div>
+                        </div>
+
+                        <div class="vacc-form-group">
+                            <label>Email Address</label>
+                            <div class="vacc-input-wrapper">
+                                <input type="email" required placeholder="name@clinic.com">
+                            </div>
+                        </div>
+
+                        <div class="vacc-form-group">
+                            <label>Password</label>
+                            <div class="vacc-input-wrapper">
+                                <input type="password" id="vaccPassword" required placeholder="••••••••">
+                                <button type="button" class="vacc-toggle-password"
+                                    style="font-size: 0.85rem; font-weight: 600;"
+                                    onclick="togglePasswordVisibility('vaccPassword')">Show</button>
+                            </div>
+                        </div>
+
+                        <div class="vacc-form-options">
+                            <label class="vacc-remember-me">
+                                <input type="checkbox">
+                                <span>Remember Me</span>
+                            </label>
+                            <a href="#" class="vacc-forgot-password">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="vacc-submit-btn">Login to Dashboard →</button>
+
+                        <div class="vacc-bottom-text">
+                            Don't have an account? <a href="request_access.html">Sign Up</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.querySelector(".vacc-modern-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = document.querySelector("input[type='email']").value;
+            const password = document.getElementById("vaccPassword").value;
+
+            try {
+                const res = await fetch("http://localhost:3000/vaccinator/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await res.json();
+
+                if (result.message === "Login successful") {
+                    localStorage.setItem("vaccinatorCenterId", result.vaccinator.centerId);
+                    localStorage.setItem("vaccinatorName", result.vaccinator.fullName);
+                    localStorage.setItem("vaccinatorEmail", result.vaccinator.email);
+                    localStorage.setItem("vaccinatorID", result.vaccinator.vaccinatorID || "");
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert(result.message || "Login failed");
+                }
+            } catch (err) {
+                console.error("Login error:", err);
+                alert("An error occurred during login.");
+            }
+        });
+    </script>
+</body>
+
+</html>

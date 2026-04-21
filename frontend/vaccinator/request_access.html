@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccinator Registration - VacciLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="vacc-split-page">
+
+    <div class="vacc-split-container">
+        <!-- Left Section (Green Panel) -->
+        <div class="vacc-split-left">
+            <div class="vacc-left-content">
+                <div class="vacc-brand-logo">
+                    <div class="vacc-logo-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <span class="vacc-logo-text">VacciLink</span>
+                </div>
+
+                <h1 class="vacc-brand-title">Join the Frontline of Child Protection.</h1>
+                <p class="vacc-brand-subtitle">Manage pediatric vaccinations with precision, empathy, and administrative
+                    ease. Your expertise, our platform.</p>
+
+                <div class="brand-illustration" style="margin-top: 30px;">
+                    <img src="../images/hero_indian_vaccination.jpg" alt="Healthcare professionals team"
+                        class="illustration-img" style="width: 100%; border-radius: 12px; object-fit: cover;">
+                </div>
+
+                <div class="brand-badge"
+                    style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); margin-top: 30px;">
+                    <div class="badge-icon" style="color: #498661;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem;">Verified Professional</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8;">Authorized Medical Access</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vacc-left-footer">
+                &copy; 2026 Child Vaccination Management System. All rights reserved.
+                <div class="vacc-footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Support</a>
+                    <a href="#">Contact Us</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section (Register Form) -->
+        <div class="vacc-split-right" style="overflow-y: auto;">
+            <div class="vacc-right-content">
+
+                <!-- Toggle Tabs -->
+                <div class="vacc-auth-tabs">
+                    <button class="vacc-tab" onclick="location.href='login.html'">Login</button>
+                    <button class="vacc-tab active" onclick="location.href='request_access.html'">Sign Up</button>
+                </div>
+
+                <div class="vacc-form-container">
+                    <div class="vacc-form-header">
+                        <h2>Vaccinator Registration</h2>
+                        <p>Complete your profile to access the management dashboard.</p>
+                    </div>
+
+                    <form id="registerForm" class="modern-form">
+                        <!-- Personal Details -->
+                        <h4 class="form-section-title" style="color: #498661;">PERSONAL DETAILS</h4>
+                        <div class="form-row two-col">
+                            <div class="form-group modern-form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fullName" required placeholder="Dr. Jane Smith">
+                            </div>
+                            <div class="form-group modern-form-group">
+                                <label>Date of Birth</label>
+                                <input type="date" id="dob" required>
+                            </div>
+                        </div>
+                        <div class="form-row two-col">
+                            <div class="form-group modern-form-group">
+                                <label>Gender</label>
+                                <select id="gender" required
+                                    style="width: 100%; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; background-color: #f9fafb;">
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group modern-form-group">
+                                <label>Mobile Number</label>
+                                <input type="text" id="phone" required placeholder="+91 (000) 000-0000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group modern-form-group" style="width: 100%;">
+                                <label>Email Address</label>
+                                <input type="email" id="email" required placeholder="jane.smith@healthcare.org">
+                            </div>
+                        </div>
+
+                        <!-- Professional Credentials -->
+                        <h4 class="form-section-title" style="color: #498661;">PROFESSIONAL CREDENTIALS</h4>
+                        <div class="form-row two-col">
+                            <div class="form-group modern-form-group">
+                                <label>Vaccinator ID / License No.</label>
+                                <input type="text" id="vaccinatorID" required placeholder="LIC-987234-X">
+                            </div>
+                            <div class="form-group modern-form-group">
+                                <label>Designation</label>
+                                <select id="designation" required
+                                    style="width: 100%; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; background-color: #f9fafb;">
+                                    <option value="" disabled selected>Select Designation</option>
+                                    <option>Doctor</option>
+                                    <option>Nurse</option>
+                                    <option>Health Worker</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group modern-form-group" style="width: 100%;">
+                                <label>Center Assigned Clinic</label>
+                                <select id="centerId" required
+                                    style="width: 100%; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; background-color: #f9fafb;">
+                                    <option value="" disabled selected>Loading centers...</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!-- Verification Documents -->
+                        <h4 class="form-section-title" style="color: #498661;">VERIFICATION DOCUMENTS</h4>
+                        <div class="form-row two-col">
+                            <div class="form-group modern-form-group">
+                                <label>Medical License / Certificate</label>
+                                <div
+                                    style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; color: #6b7280; font-size: 0.85rem; background-color: #f9fafb;">
+                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                        style="margin-bottom: 5px;">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    <div>Upload PDF or JPG</div>
+                                </div>
+                            </div>
+                            <div class="form-group modern-form-group">
+                                <label>Government ID Proof</label>
+                                <div
+                                    style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; color: #6b7280; font-size: 0.85rem; background-color: #f9fafb;">
+                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                        style="margin-bottom: 5px;">
+                                        <path d="M3 4h18v16H3z"></path>
+                                        <circle cx="9" cy="10" r="4"></circle>
+                                        <path d="M15 10h4"></path>
+                                        <path d="M15 14h4"></path>
+                                        <path d="M5 20v-2c0-2.2 3.6-4 8-4s8 1.8 8 4v2"></path>
+                                    </svg>
+                                    <div>Aadhaar / Passport</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Secure Account -->
+                        <h4 class="form-section-title" style="color: #498661;">SECURE ACCOUNT</h4>
+                        <div class="form-row two-col">
+                            <div class="form-group modern-form-group">
+                                <label>Create Password</label>
+                                <input type="password" id="password" required placeholder="••••••••">
+                            </div>
+                            <div class="form-group modern-form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" id="confirmPassword" required placeholder="••••••••">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="vacc-submit-btn" style="margin-top: 20px;">Complete Sign
+                            Up</button>
+
+                        <div class="vacc-bottom-text">
+                            Already have a professional account? <a href="login.html">Login here</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Deployment config ──────────────────────────────────────────────
+        // Replace the placeholder below with your actual Render backend URL
+        // e.g. "https://vaccilink-api.onrender.com"
+        const API_BASE_URL = "http://localhost:3000";
+        // ──────────────────────────────────────────────────────────────────
+
+        async function loadCenters() {
+            const select = document.getElementById("centerId");
+            try {
+                const res = await fetch(`${API_BASE_URL}/centers`);
+                const centers = await res.json();
+                select.innerHTML = '<option value="" disabled selected>Select assigned center</option>';
+                centers.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.centerId;
+                    opt.textContent = `${c.name} (${c.city || 'N/A'})`;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                select.innerHTML = '<option value="" disabled selected>Error loading centers</option>';
+            }
+        }
+        loadCenters();
+
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const password = document.getElementById("password").value;
+            const confirm = document.getElementById("confirmPassword").value;
+
+            if (password !== confirm) {
+                alert("Passwords do not match");
+                return;
+            }
+
+            const data = {
+                fullName: document.getElementById("fullName").value,
+                phone: document.getElementById("phone").value,
+                email: document.getElementById("email").value,
+                vaccinatorID: document.getElementById("vaccinatorID").value,
+                designation: document.getElementById("designation").value,
+                centerId: document.getElementById("centerId").value,
+                password
+            };
+
+            const res = await fetch(`${API_BASE_URL}/vaccinator/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            alert(result.message);
+            if (result.message === "Registered successfully!") {
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+</body>
+
+</html>

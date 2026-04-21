@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccination Schedule - VacciLink</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vaccinator_dashboard.css">
+    <style>
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-green);
+        }
+
+        .child-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .child-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .child-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-green);
+        }
+
+        .child-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .child-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
+        }
+
+        .submit-btn-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="welcome-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <h1>Vaccination Schedule Session</h1>
+                    <p>Filter and administer due vaccines for eligible children</p>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Back to
+                    Dashboard</button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+            <div style="max-width: 800px; margin: 0 auto; width: 100%;">
+
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Search by ID or Age Group (e.g. 10 weeks)" onkeyup="renderList()">
+                </div>
+
+                <div class="child-list" id="childListContainer">
+                    <!-- Cards injected via JS -->
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+
+
+    <!-- SCRIPT -->
+    <script>
+        // STRICT VACCINE SCHEDULE DEFINITION
+        const VACCINE_SCHEDULE = [
+            { window: 'Birth', minDays: 0, maxDays: 14, vaccines: ['BCG', 'OPV 0', 'Hep B 0'] },
+            { window: '6 weeks', minDays: 42, maxDays: 56, vaccines: ['OPV 1', 'Pentavalent 1', 'Rotavirus 1', 'fIPV 1', 'PCV 1'] },
+            { window: '10 weeks', minDays: 70, maxDays: 84, vaccines: ['OPV 2', 'Pentavalent 2', 'Rotavirus 2'] },
+            { window: '14 weeks', minDays: 98, maxDays: 112, vaccines: ['OPV 3', 'Pentavalent 3', 'Rotavirus 3', 'fIPV 2', 'PCV 2'] },
+            { window: '9 months', minDays: 270, maxDays: 300, vaccines: ['MR 1', 'JE 1', 'PCV Booster'] }
+        ];
+
+        let allChildren = [];
+
+        async function fetchDatabaseChildren() {
+            try {
+                const res = await fetch('/vaccinator/schedule_children');
+                if (res.ok) {
+                    allChildren = await res.json();
+                }
+                renderList();
+            } catch (err) {
+                console.error("Failed to load children", err);
+                document.getElementById('childListContainer').innerHTML = "<div class='no-records'>Error loading data.</div>";
+            }
+        }
+
+        // Helper to get exact age in days
+        function getAgeInDays(dobString) {
+            const dob = new Date(dobString);
+            const diffTime = Math.abs(new Date() - dob);
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // Match exact age day amount to a strict window bounds
+        function getEligibleWindow(ageDays) {
+            for (let schedule of VACCINE_SCHEDULE) {
+                if (ageDays >= schedule.minDays && ageDays <= schedule.maxDays) {
+                    return schedule;
+                }
+            }
+            // Gap detected!
+            return null;
+        }
+
+        function renderList() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const listContainer = document.getElementById('childListContainer');
+            listContainer.innerHTML = '';
+
+            let eligibleCount = 0;
+
+            allChildren.forEach(child => {
+                if (!child.dob) return; // Ignore records without DOB for strict scheduling
+
+                const ageDays = getAgeInDays(child.dob);
+                const win = getEligibleWindow(ageDays);
+
+                // Exclude children strictly in Gaps
+                if (!win) return;
+
+                // Allow filtering by Child ID or Age Group Window string
+                const searchMatches = searchQuery === "" ||
+                    (child.id && child.id.toLowerCase().includes(searchQuery)) ||
+                    win.window.toLowerCase().includes(searchQuery);
+
+                if (!searchMatches) return;
+
+                // Calculate if all vaccines are done to style the badge
+                const childCompleted = child.completedVaccines || [];
+                const dueVaccines = win.vaccines.filter(v => !childCompleted.includes(v));
+                const isAllDone = dueVaccines.length === 0;
+
+                eligibleCount++;
+
+                const card = document.createElement('div');
+                card.className = 'child-card';
+                card.onclick = () => window.location.href = `child-summary.html?childId=${encodeURIComponent(child.id)}`;
+
+                card.innerHTML = `
+                    <div class="child-info">
+                        <h3>${child.name}</h3>
+                        <p>ID: ${child.id} | Age: ${ageDays} days</p>
+                        <p style="color: var(--primary-green); font-weight: 600; margin-top: 6px;">Eligible for: ${win.window}</p>
+                    </div>
+                    <div>
+                        ${isAllDone
+                        ? '<span style="background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; border: 1px solid #c8e6c9;">Completed</span>'
+                        : '<span style="background: #fff3e0; color: #ef6c00; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; border: 1px solid #ffe0b2;">Action Required</span>'}
+                    </div>
+                `;
+
+                listContainer.appendChild(card);
+            });
+
+            if (eligibleCount === 0) {
+                listContainer.innerHTML = `<div class="no-records">No eligible children found in their active vaccine windows.</div>`;
+            }
+        }
+
+
+
+        // INIT Call
+        window.onload = () => {
+            fetchDatabaseChildren();
+        };
+    </script>
+    <script src="vaccinator-sidebar.js"></script>
+</body>
+
+</html>

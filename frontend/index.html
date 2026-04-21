@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VacciLink - Transform Immunization for India's Children</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="landing-page professional-layout">
+
+    <!-- 1. NAVBAR -->
+    <nav class="pro-navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">VacciLink</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#benefits">Benefits</a></li>
+                <li><a href="#portals">Access System</a></li>
+                <li><a href="#help-section">Help</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 2. HERO SECTION -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>VacciLink: Transform Immunization for India's Children.</h1>
+                <p>Ensure your child's healthy future with our trusted, digital vaccination scheduling and tracking platform nationwide.</p>
+                <div class="hero-buttons">
+                    <!-- Point Get Started to the new combined Auth Page -->
+                    <button class="btn btn-blue btn-large" onclick="location.href='parent/login.html'">Get Started</button>
+                    <!-- Anchored to portals section as a secondary action -->
+                    <button class="btn btn-outline btn-large" onclick="location.href='#portals'">Provider Portal</button>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <img src="images/hero_indian_vaccination.jpg" alt="Indian Doctor vaccinating baby" class="hero-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. FEATURES SECTION (Redesigned Cards) -->
+    <section id="features" class="features-section" style="background-color: #f8f9fa;">
+        <div class="section-container">
+            <div class="section-header center-align">
+                <h2 class="section-title">Precision Features for Peace of Mind</h2>
+                <p class="section-subtitle">Our comprehensive toolkit ensures no child is left behind in their journey towards full immunization.</p>
+            </div>
+
+            <div class="features-grid-pro">
+                <!-- Card 1 -->
+                <div class="feature-card-modern">
+                    <div class="feature-icon-top-left">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <h3>Unique Digital Child ID</h3>
+                    <p>A secure digital identity for every child, ensuring records are never lost and always accessible.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="feature-card-modern">
+                    <div class="feature-icon-top-left">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <h3>Smart Vaccination Schedule</h3>
+                    <p>Automatically generates timelines and sends smart alerts based on the child's age and medical history.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="feature-card-modern">
+                    <div class="feature-icon-top-left">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                    <h3>Nationwide Record Access</h3>
+                    <p>Seamlessly access immunization records at any authorized health center across the country.</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="feature-card-modern">
+                    <div class="feature-icon-top-left">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    </div>
+                    <h3>Data-Based Monitoring Dashboard</h3>
+                    <p>Real-time analytics and heatmaps for healthcare centers to visualize vaccination coverage.</p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="feature-card-modern">
+                    <div class="feature-icon-top-left">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3>Vaccinator Performance Insights</h3>
+                    <p>Detailed reports on individual and facility-level efficiency and population reach.</p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="feature-card-modern">
+                    <div class="feature-icon-top-left">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <h3>Follow-Up & Defaulter Tracking</h3>
+                    <p>Intelligently detects missed vaccinations and automates follow-up procedures for health workers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW: BENEFITS SECTION -->
+    <section id="benefits" class="benefits-section">
+        <div class="section-container">
+            <div class="section-header center-align">
+                <h2 class="section-title">How VacciLink Benefits Users</h2>
+                <p class="section-subtitle">Dedicated tools for parents and healthcare providers to streamline immunization management.</p>
+            </div>
+
+            <div class="benefits-grid">
+                <!-- Parent Benefits Card -->
+                <div class="benefit-card">
+                    <h3>Benefits for Parents</h3>
+                    <ul class="benefit-list">
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Never miss a vaccination with automatic reminders</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Secure digital vaccination records stored for life</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Easy access to child health history anytime, anywhere</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Personalized vaccination schedule tailored to your child</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>QR-based digital child ID for quick record access at clinics</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Vaccinator Benefits Card -->
+                <div class="benefit-card">
+                    <h3>Benefits for Vaccinators</h3>
+                    <ul class="benefit-list">
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Easy digital updating of vaccination records in real-time</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Automatic schedule generation based on child age & DOB</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Faster patient verification using high-speed QR code scanning</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Better tracking of completed and missed vaccines across populations</span>
+                        </li>
+                        <li class="benefit-item">
+                            <div class="benefit-item-icon"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                            <span>Improved monitoring of vaccination coverage with visual heatmaps</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. PORTAL SELECTION SECTION -->
+    <section id="portals" class="portal-section" style="background-color: #f8f9fa;">
+        <div class="section-container">
+            <h2 class="section-title">Access VacciLink Systems</h2>
+            <div class="portal-grid">
+                <!-- Parent Portal (Blue theme) -->
+                <div class="pro-card pro-parent-card">
+                    <div class="portal-content">
+                        <h2>Parent Portal</h2>
+                        <p>Manage your child's immunization schedule.</p>
+                        <button class="btn btn-blue btn-large" onclick="location.href='parent/login.html'" style="color: #0277bd; font-weight: bold; background: white;">Parent Login</button>
+                    </div>
+                </div>
+
+                <!-- Vaccinator Portal (Green theme) -->
+                <div class="pro-card pro-vaccinator-card">
+                    <div class="portal-content">
+                        <h2>Vaccinator Portal</h2>
+                        <p>Secure login for health practitioners to manage records.</p>
+                        <button class="btn btn-green btn-large" onclick="location.href='vaccinator/login.html'" style="color: #2e7d32; font-weight: bold; background: white;">Vaccinator Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. HELP SECTION -->
+    <section id="help-section" class="help-section">
+        <div class="section-container">
+            <h2 class="section-title">Help & Emergency Resources</h2>
+            
+            <div class="emergency-contacts">
+                <div class="emergency-box">
+                    <h4>Child Health Helpline</h4>
+                    <span class="emergency-number">1098</span>
+                </div>
+                <div class="emergency-box">
+                    <h4>Local Vaccination Center</h4>
+                    <span class="emergency-number">104</span>
+                </div>
+                <div class="emergency-box">
+                    <h4>Emergency Pediatric Support</h4>
+                    <span class="emergency-number">102</span>
+                </div>
+            </div>
+
+            <div class="flip-cards-grid">
+                <!-- Flip Card 1 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>Fever after vaccination</h3>
+                            <p class="flip-instruction">Hover to reveal details</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Normal mild fever may occur.</p>
+                            <p>Give paracetamol and keep child hydrated.</p>
+                            <p>Visit doctor if fever persists.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flip Card 2 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>Swelling at injection site</h3>
+                            <p class="flip-instruction">Hover to reveal details</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Apply cold compress.</p>
+                            <p>Avoid pressing the area.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flip Card 3 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>Child crying after vaccine</h3>
+                            <p class="flip-instruction">Hover to reveal details</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>This is common.</p>
+                            <p>Hold and comfort the child.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. FAQ SECTION -->
+    <section id="faq" class="faq-section" style="background-color: #f0f8ff; padding: 80px 20px;">
+        <div class="section-container" style="max-width: 800px;">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <button class="faq-question">Q1: What is VacciLink?</button>
+                    <div class="faq-answer">
+                        <p>VacciLink is a smart child vaccination management platform that helps parents and healthcare workers track vaccination schedules, monitor milestones, and prevent missed immunization doses.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Q2: Who can use VacciLink?</button>
+                    <div class="faq-answer">
+                        <p>VacciLink is designed for two main users. Parents can track their child’s vaccination schedule and receive reminders, while vaccinators or healthcare workers can manage vaccination records and identify children eligible for vaccines.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Q3: How does VacciLink generate vaccination schedules?</button>
+                    <div class="faq-answer">
+                        <p>The system automatically generates a personalized vaccination timeline based on the child’s date of birth and standard immunization milestones.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Q4: Can VacciLink detect missed vaccines?</button>
+                    <div class="faq-answer">
+                        <p>Yes. VacciLink continuously checks vaccination records and identifies children who have missed scheduled doses, helping healthcare workers take quick action.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Q5: Does VacciLink send reminders to parents?</button>
+                    <div class="faq-answer">
+                        <p>Yes. VacciLink sends automatic reminders and alerts to parents about upcoming vaccination dates so that no child misses an important immunization.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. FOOTER -->
+    <footer class="pro-footer">
+        <div class="footer-container">
+            <div class="footer-col" style="flex: 2;">
+                <h3>VacciLink</h3>
+                <p>Digital Health Initiative for Children.</p>
+                <p>Creating a healthier India through secure, accessible, and comprehensive immunization tracking.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>Email: support@vaccilink.in</p>
+                <p>Phone: +91-1800-VACCILINK</p>
+            </div>
+            <div class="footer-col">
+                <h4>Help Links</h4>
+                <ul>
+                    <li><a href="parent/help.html">Parent FAQ</a></li>
+                    <li><a href="#">Vaccinator Guide</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VacciLink. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

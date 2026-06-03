@@ -4,6 +4,8 @@
  * Usage: add <script src="vaccinator-sidebar.js"></script> before </body>
  */
 
+const API_BASE_URL = "https://vaccilink-final.onrender.com";
+
 (function () {
   /* ── 1. Read logged-in vaccinator from localStorage ── */
   const vaccName    = localStorage.getItem("vaccinatorName")    || "Vaccinator";
@@ -129,7 +131,7 @@ async function hydrateSidebarAndHeader() {
   // Fetch latest profile from server to ensure fresh data
   if (vaccEmail) {
     try {
-      const response = await fetch(`http://localhost:3000/vaccinator/profile/${encodeURIComponent(vaccEmail)}`);
+      const response = await fetch(`${API_BASE_URL}/vaccinator/profile/${encodeURIComponent(vaccEmail)}`);
       if (response.ok) {
         const data = await response.json();
         if (data.fullName) {

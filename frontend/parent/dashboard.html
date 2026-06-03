@@ -220,13 +220,14 @@ Go to Profile
 
 <script>
 
+const API_BASE_URL = "https://vaccilink-final.onrender.com";
 const email = localStorage.getItem("parentEmail");
 
 if(!email){
 window.location.href="login.html";
 }
 
-fetch("http://localhost:3000/parent/"+email)
+fetch(API_BASE_URL + "/parent/"+email)
 .then(res=>res.json())
 .then(data=>{
 
@@ -279,7 +280,7 @@ qrEl.addEventListener("click", goProfile);
 qrEl.addEventListener("keydown", function (e) {
 if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goProfile(); }
 });
-fetch("http://localhost:3000/parent/qr-verify-url/" + encodeURIComponent(data.childID) + "?origin=" + encodeURIComponent(window.location.origin))
+fetch(API_BASE_URL + "/parent/qr-verify-url/" + encodeURIComponent(data.childID) + "?origin=" + encodeURIComponent(window.location.origin))
 .then(function (r) { return r.json(); })
 .then(function (q) {
 if (q && q.verify_url) {
@@ -295,7 +296,7 @@ qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + en
 })();
 
 // Vaccination Logic
-fetch("http://localhost:3000/child/" + data.childID)
+fetch(API_BASE_URL + "/child/" + data.childID)
 .then(res=>res.json())
 .then(childData=>{
 const merged = childData.vaccinationHistory || [];

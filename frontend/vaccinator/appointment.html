@@ -224,14 +224,18 @@
                 const appDate = new Date(app.appointmentDate);
                 appDate.setHours(0, 0, 0, 0);
 
+                const isCompleted = app.status === 'completed';
+                const isToday = appDate.getTime() === today.getTime();
+
                 if (currentTab === 'Today') {
-                    return appDate.getTime() === today.getTime() && app.status !== 'completed';
+                    return isToday && !isCompleted;
                 }
                 if (currentTab === 'Upcoming') {
-                    return appDate.getTime() > today.getTime() && app.status !== 'completed';
+                    // Show if not today and not completed (includes past missed and future)
+                    return !isToday && !isCompleted;
                 }
                 if (currentTab === 'Completed') {
-                    return app.status === 'completed';
+                    return isCompleted;
                 }
                 return true; // 'All'
             });

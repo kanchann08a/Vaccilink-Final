@@ -428,6 +428,7 @@
     <script src="../js/avatars.js"></script>
     <script src="vaccinator-sidebar.js"></script>
     <script>
+        const API_BASE_URL = "https://vaccilink-final.onrender.com";
         let allData = [];
         let statusFilter = 'All';
 
@@ -447,7 +448,7 @@
         async function fetchDashboardData() {
             try {
                 await hydrateSidebarAndHeader();
-                const res = await fetch(`http://localhost:3000/vaccinator/dashboard/${encodeURIComponent(centerId)}`);
+                const res = await fetch(`${API_BASE_URL}/vaccinator/dashboard/${encodeURIComponent(centerId)}`);
                 if (!res.ok) throw new Error("Failed to fetch dashboard data");
 
                 allData = await res.json();
@@ -538,11 +539,12 @@
                 if (statusFilter === "Completed") {
                     // Show most recent completion
                     const completed = vaccines.filter(v => v.status.toLowerCase() === "completed");
-                    // Sort by appointmentDate which we'll use as completion date if available
                     priority = completed.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate))[0];
                 } else {
-                    // Priority: Overdue > Today > Upcoming > Completed
-                    priority = vaccines.find(v => v.status.toLowerCase() === "overdue") ||
+                    // Smart priority: active filter status first, then Overdue > Today > Upcoming
+                    const activeS = statusFilter.toLowerCase();
+                    priority = (activeS !== "all" ? vaccines.find(v => v.status.toLowerCase() === activeS) : null) ||
+                        vaccines.find(v => v.status.toLowerCase() === "overdue") ||
                         vaccines.find(v => v.status.toLowerCase() === "today") ||
                         vaccines.find(v => v.status.toLowerCase() === "upcoming") ||
                         vaccines[0];
@@ -651,7 +653,7 @@
             if (!confirm(`Mark ${vaccineName} dose ${doseNumber} as completed for ${childID}?`)) return;
 
             try {
-                const url = `http://localhost:3000/vaccination/complete/${encodeURIComponent(childID)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(doseNumber)}`;
+                const url = `${API_BASE_URL}/vaccination/complete/${encodeURIComponent(childID)}/${encodeURIComponent(vaccineName)}/${encodeURIComponent(doseNumber)}`;
                 const res = await fetch(url, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },

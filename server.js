@@ -35,10 +35,11 @@ const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || "your_google_maps
 
 // Allow all origins for local setup
 const allowedOrigins = [
-  process.env.FRONTEND_URL,          // e.g. https://vaccilink.netlify.app
+  process.env.FRONTEND_URL,          
+  "https://vaccilink-final.onrender.com",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
-  "http://localhost:5500",           // VS Code Live Server
+  "http://localhost:5500",          
   "http://127.0.0.1:5500"
 ].filter(Boolean);
 
@@ -349,41 +350,234 @@ function generateEmailHTML(parent, vaccineName, doseNumber, centerName, dateTake
     </div>
   `;
 }
-
 /* Vaccination Schedule Logic for Backend */
 const VACCINE_BATCHES = [
   {
-    age: "At Birth", days: 0, vaccines: [
-      { name: "BCG", doseNumber: 1 }, { name: "OPV-0", doseNumber: 1 }, { name: "Hepatitis-B", doseNumber: 1 }, { name: "Vitamin K", doseNumber: 1 }
+    age: "At Birth",
+    days: 0,
+    vaccines: [
+      {
+        name: "BCG",
+        doseNumber: 1,
+        purpose: "Protects against Tuberculosis.",
+        description: "Given at birth to prevent severe TB in children.",
+        sideEffects: "Mild fever, swelling or scar at injection site.",
+        doseSite: "Left upper arm"
+      },
+      {
+        name: "OPV-0",
+        doseNumber: 1,
+        purpose: "Protects against Polio.",
+        description: "Birth dose oral polio vaccine.",
+        sideEffects: "Usually none.",
+        doseSite: "Oral drops"
+      },
+      {
+        name: "Hepatitis-B",
+        doseNumber: 1,
+        purpose: "Protects against Hepatitis B infection.",
+        description: "Birth dose to prevent liver infection.",
+        sideEffects: "Mild fever, soreness.",
+        doseSite: "Thigh"
+      },
+      {
+        name: "Vitamin K",
+        doseNumber: 1,
+        purpose: "Prevents bleeding disorder in newborns.",
+        description: "Given after birth for blood clotting support.",
+        sideEffects: "Rare pain or swelling.",
+        doseSite: "Thigh"
+      }
     ]
   },
+
   {
-    age: "6 Weeks", days: 42, vaccines: [
-      { name: "Pentavalent-1", doseNumber: 1 }, { name: "OPV-1", doseNumber: 1 }, { name: "Rotavirus-1", doseNumber: 1 }, { name: "IPV-1", doseNumber: 1 }, { name: "PCV-1", doseNumber: 1 }
+    age: "6 Weeks",
+    days: 42,
+    vaccines: [
+      {
+        name: "Pentavalent-1",
+        doseNumber: 1,
+        purpose: "Protects against 5 diseases.",
+        description: "First Pentavalent dose.",
+        sideEffects: "Fever, swelling.",
+        doseSite: "Thigh"
+      },
+      {
+        name: "OPV-1",
+        doseNumber: 1,
+        purpose: "Polio protection.",
+        description: "First scheduled OPV dose.",
+        sideEffects: "Usually none.",
+        doseSite: "Oral drops"
+      },
+      {
+        name: "Rotavirus-1",
+        doseNumber: 1,
+        purpose: "Prevents severe diarrhea.",
+        description: "First Rotavirus dose.",
+        sideEffects: "Mild stomach upset.",
+        doseSite: "Oral"
+      },
+      {
+        name: "IPV-1",
+        doseNumber: 1,
+        purpose: "Injectable Polio protection.",
+        description: "First IPV dose.",
+        sideEffects: "Pain, fever.",
+        doseSite: "Thigh"
+      },
+      {
+        name: "PCV-1",
+        doseNumber: 1,
+        purpose: "Protects from pneumonia.",
+        description: "First PCV dose.",
+        sideEffects: "Fever, pain.",
+        doseSite: "Thigh"
+      }
     ]
   },
+
   {
-    age: "10 Weeks", days: 70, vaccines: [
-      { name: "Pentavalent-2", doseNumber: 2 }, { name: "OPV-2", doseNumber: 2 }, { name: "Rotavirus-2", doseNumber: 2 }, { name: "PCV-2", doseNumber: 2 }
+    age: "10 Weeks",
+    days: 70,
+    vaccines: [
+      {
+        name: "Pentavalent-2",
+        doseNumber: 2,
+        purpose: "Second protection booster.",
+        description: "Second Pentavalent dose.",
+        sideEffects: "Fever, swelling.",
+        doseSite: "Thigh"
+      },
+      {
+        name: "OPV-2",
+        doseNumber: 2,
+        purpose: "Polio protection.",
+        description: "Second OPV dose.",
+        sideEffects: "Usually none.",
+        doseSite: "Oral drops"
+      },
+      {
+        name: "Rotavirus-2",
+        doseNumber: 2,
+        purpose: "Diarrhea prevention.",
+        description: "Second Rotavirus dose.",
+        sideEffects: "Mild stomach upset.",
+        doseSite: "Oral"
+      },
+      {
+        name: "PCV-2",
+        doseNumber: 2,
+        purpose: "Pneumonia protection.",
+        description: "Second PCV dose.",
+        sideEffects: "Fever.",
+        doseSite: "Thigh"
+      }
     ]
   },
+
   {
-    age: "14 Weeks", days: 98, vaccines: [
-      { name: "Pentavalent-3", doseNumber: 3 }, { name: "OPV-3", doseNumber: 3 }, { name: "Rotavirus-3", doseNumber: 3 }, { name: "IPV-2", doseNumber: 2 }, { name: "PCV-3", doseNumber: 3 }
+    age: "14 Weeks",
+    days: 98,
+    vaccines: [
+      {
+        name: "Pentavalent-3",
+        doseNumber: 3,
+        purpose: "Final primary protection.",
+        description: "Third Pentavalent dose.",
+        sideEffects: "Fever.",
+        doseSite: "Thigh"
+      },
+      {
+        name: "OPV-3",
+        doseNumber: 3,
+        purpose: "Polio protection.",
+        description: "Third OPV dose.",
+        sideEffects: "Usually none.",
+        doseSite: "Oral drops"
+      },
+      {
+        name: "Rotavirus-3",
+        doseNumber: 3,
+        purpose: "Final Rotavirus dose.",
+        description: "Third Rotavirus dose.",
+        sideEffects: "Mild upset stomach.",
+        doseSite: "Oral"
+      },
+      {
+        name: "IPV-2",
+        doseNumber: 2,
+        purpose: "Second injectable Polio dose.",
+        description: "Second IPV dose.",
+        sideEffects: "Pain, fever.",
+        doseSite: "Thigh"
+      },
+      {
+        name: "PCV-3",
+        doseNumber: 3,
+        purpose: "Final pneumonia protection.",
+        description: "Third PCV dose.",
+        sideEffects: "Mild fever.",
+        doseSite: "Thigh"
+      }
     ]
   },
+
   {
-    age: "9 Months", days: 270, vaccines: [
-      { name: "MR-1", doseNumber: 1 }, { name: "Vitamin A", doseNumber: 1 }
+    age: "9 Months",
+    days: 270,
+    vaccines: [
+      {
+        name: "MR-1",
+        doseNumber: 1,
+        purpose: "Protects against Measles & Rubella.",
+        description: "First MR dose.",
+        sideEffects: "Fever, rash.",
+        doseSite: "Arm"
+      },
+      {
+        name: "Vitamin A",
+        doseNumber: 1,
+        purpose: "Improves immunity and eyesight.",
+        description: "Vitamin A supplement.",
+        sideEffects: "Usually none.",
+        doseSite: "Oral syrup"
+      }
     ]
   },
+
   {
-    age: "16 Months", days: 480, vaccines: [
-      { name: "MR-2", doseNumber: 2 }, { name: "DPT Booster", doseNumber: 1 }, { name: "OPV Booster", doseNumber: 1 }
+    age: "16 Months",
+    days: 480,
+    vaccines: [
+      {
+        name: "MR-2",
+        doseNumber: 2,
+        purpose: "Second Measles Rubella booster.",
+        description: "Second MR dose.",
+        sideEffects: "Mild fever.",
+        doseSite: "Arm"
+      },
+      {
+        name: "DPT Booster",
+        doseNumber: 1,
+        purpose: "Booster for Diphtheria, Pertussis, Tetanus.",
+        description: "Given at 16 months.",
+        sideEffects: "Pain, swelling.",
+        doseSite: "Arm"
+      },
+      {
+        name: "OPV Booster",
+        doseNumber: 1,
+        purpose: "Polio booster protection.",
+        description: "Extra OPV booster dose.",
+        sideEffects: "Usually none.",
+        doseSite: "Oral drops"
+      }
     ]
   }
 ];
-
 function generateSchedule(childDOB) {
   const dob = new Date(childDOB);
   dob.setHours(0, 0, 0, 0);
@@ -1205,7 +1399,7 @@ app.get("/parent/qr-verify-url/:childID", async (req, res) => {
     const parent = await Parent.findOne({ childID });
     if (!parent) return res.status(404).json({ message: "Child not found" });
     const secret = await ensureQrSecret(parent);
-    const base = "http://localhost:3000";
+    const base = process.env.PUBLIC_BASE_URL || "https://vaccilink-final.onrender.com";
     res.json({
       verify_url: buildVerifyQrUrl(base, childID, secret),
       child_id: childID
@@ -1220,7 +1414,7 @@ app.get("/parent/qr-verify-url/:childID", async (req, res) => {
 app.get("/api/parent/secure-qr/:childID", async (req, res) => {
   try {
     const { childID } = req.params;
-    const origin = req.query.origin || "http://localhost:3000";
+    const origin = req.query.origin || process.env.PUBLIC_BASE_URL || "https://vaccilink-final.onrender.com";
     const parent = await Parent.findOne({ childID });
     if (!parent) return res.status(404).json({ message: "Child not found" });
 
@@ -1766,17 +1960,15 @@ app.get("/vaccinator/dashboard/:centerId", async (req, res) => {
     today.setHours(0, 0, 0, 0);
 
     const allParents = await Parent.find().lean();
-    const allAppointments = await Appointment.find({ centerId });
+    const allAppointments = await Appointment.find({ centerId }).lean();
 
     let tableData = [];
+    const consumedAppointmentIds = new Set();
 
     allParents.forEach(p => {
       const schedule = generateSchedule(p.childDOB);
       const merged = mergeHistory(schedule, p.vaccinationHistory);
-
-      // Backend calculated age formatting
       const formattedAge = formatAge(p.childDOB || p.dob || p.dateOfBirth);
-      // console.log(`Child: ${p.childName}, DOB: ${p.childDOB}, Calculated Age: ${formattedAge}`);
 
       merged.forEach(v => {
         const schDate = v.scheduledDate || v.dueDate;
@@ -1785,7 +1977,6 @@ app.get("/vaccinator/dashboard/:centerId", async (req, res) => {
 
         const isTodaySch = vDate && vDate.getTime() === today.getTime();
         const isOverdueSch = vDate && vDate < today && v.status !== "completed";
-        const isUpcomingSch = vDate && vDate > today;
 
         // Check for specific appointment
         const appt = allAppointments.find(a =>
@@ -1794,10 +1985,11 @@ app.get("/vaccinator/dashboard/:centerId", async (req, res) => {
           Number(a.doseNumber) === Number(v.doseNumber)
         );
 
-        let finalStatus = v.status; // default from history (completed/scheduled/overdue/upcoming)
+        let finalStatus = v.status;
         let finalDate = schDate;
 
         if (appt) {
+          consumedAppointmentIds.add(String(appt._id));
           const aDate = new Date(appt.appointmentDate);
           aDate.setHours(0, 0, 0, 0);
           finalDate = appt.appointmentDate;
@@ -1807,12 +1999,10 @@ app.get("/vaccinator/dashboard/:centerId", async (req, res) => {
           else if (aDate < today) finalStatus = "Overdue";
           else finalStatus = "Upcoming";
         } else {
-          // No appointment, use schedule status rules from prompt
           if (v.status === "completed") finalStatus = "completed";
           else if (isTodaySch) finalStatus = "Today";
           else if (isOverdueSch) finalStatus = "Overdue";
-          else if (isUpcomingSch) finalStatus = "Upcoming";
-          else finalStatus = "Upcoming"; // Default to upcoming if in future
+          else finalStatus = "Upcoming";
         }
 
         let shouldInclude = false;
@@ -1826,7 +2016,7 @@ app.get("/vaccinator/dashboard/:centerId", async (req, res) => {
             childName: p.childName,
             parentName: p.parentName || "N/A",
             childDOB: p.childDOB,
-            age: formattedAge, // READY VALUE FROM BACKEND
+            age: formattedAge,
             gender: (p.gender && p.gender !== "Unknown" && p.gender !== "Any") ? p.gender : (appt?.gender || "Unknown"),
             address: p.address || "N/A",
             vaccineName: v.vaccineName,
@@ -1839,6 +2029,42 @@ app.get("/vaccinator/dashboard/:centerId", async (req, res) => {
           });
         }
       });
+    });
+
+    // Add unmatched/orphaned appointments
+    const unmatched = allAppointments.filter(a => !consumedAppointmentIds.has(String(a._id)) && a.status !== "completed");
+    for (const appt of unmatched) {
+      const p = allParents.find(px => px.childID === appt.childID) || {};
+      const aDate = new Date(appt.appointmentDate);
+      aDate.setHours(0, 0, 0, 0);
+
+      let finalStatus = "Upcoming";
+      if (aDate.getTime() === today.getTime()) finalStatus = "Today";
+      else if (aDate < today) finalStatus = "Overdue";
+
+      tableData.push({
+        childName: appt.childName || p.childName || "Unknown",
+        parentName: p.parentName || "N/A",
+        childDOB: p.childDOB || "",
+        age: formatAge(p.childDOB),
+        gender: appt.gender || p.gender || "Unknown",
+        address: p.address || "N/A",
+        vaccineName: appt.vaccineName,
+        doseNumber: appt.doseNumber,
+        appointmentDate: appt.appointmentDate,
+        status: finalStatus,
+        childID: appt.childID,
+        phone: appt.parentPhone || p.phone || ""
+      });
+    }
+
+    // Sort: Today first, then Upcoming (by date), then others
+    const statusPriority = { "Today": 1, "Upcoming": 2, "Overdue": 3, "completed": 4 };
+    tableData.sort((a, b) => {
+      const pA = statusPriority[a.status] || 99;
+      const pB = statusPriority[b.status] || 99;
+      if (pA !== pB) return pA - pB;
+      return new Date(a.appointmentDate) - new Date(b.appointmentDate);
     });
 
     res.json(tableData);
@@ -2332,8 +2558,8 @@ app.put("/vaccination/complete/:childID/:vaccineName/:doseNumber", async (req, r
 
     const taken = new Date();
     const certId = `VACC-2026-${Math.floor(1000 + Math.random() * 9000)}-${Date.now().toString().slice(-4)}`;
-    
-    const verifyBase = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get("host") || "localhost:3000"}`;
+
+    const verifyBase = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get("host") || "vaccilink-final.onrender.com"}`;
     const verifyUrl = `${verifyBase}/verify.html?id=${certId}`;
     let qrCodeBase64 = "";
     try {
@@ -2418,8 +2644,8 @@ app.put("/vaccination/complete/:childID/:vaccineName/:doseNumber", async (req, r
       emailWarning = "Completed but email missing";
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "Vaccination completed!",
       warning: emailWarning
     });
@@ -2689,7 +2915,7 @@ app.post("/generate-qr-token", async (req, res) => {
       String(origin || "").trim() ||
       process.env.PUBLIC_BASE_URL ||
       process.env.FRONTEND_URL ||
-      "http://localhost:3000";
+      "https://vaccilink-final.onrender.com";
     const verify_url = buildVerifyQrUrl(base, childID, secret);
     res.json({
       token: secret,

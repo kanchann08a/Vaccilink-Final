@@ -35,11 +35,11 @@ const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || "your_google_maps
 
 // Allow all origins for local setup
 const allowedOrigins = [
-  process.env.FRONTEND_URL,          
+  process.env.FRONTEND_URL,
   "https://vaccilink-final.onrender.com",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
-  "http://localhost:5500",          
+  "http://localhost:5500",
   "http://127.0.0.1:5500"
 ].filter(Boolean);
 
@@ -88,6 +88,16 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  }
+});
+
+// Diagnostic check for SMTP connection
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error("❌ SMTP Connection Error:", error);
+    console.log(`Diagnostic Info: EMAIL_USER loaded = ${!!process.env.EMAIL_USER}, EMAIL_PASS loaded = ${!!process.env.EMAIL_PASS}`);
+  } else {
+    console.log("✅ SMTP Server is ready to take our messages");
   }
 });
 
@@ -1057,19 +1067,35 @@ app.post("/vaccinator/add-effect", async (req, res) => {
 
 app.post("/send-otp", async (req, res) => {
   const { email } = req.body;
+
+  console.log(`\n--- [Diagnostic] /send-otp route hit ---`);
+  console.log(`Recipient: ${email}`);
+  console.log(`EMAIL_USER configured as: ${process.env.EMAIL_USER}`);
+  console.log(`EMAIL_PASS is present: ${!!process.env.EMAIL_PASS}`);
+
+  if (!email) {
+    console.log(`❌ [Diagnostic] No email provided in request body`);
+    return res.status(400).json({ message: "Email is required" });
+  }
+
   const otp = Math.floor(100000 + Math.random() * 900000);
+  console.log(`[Diagnostic] OTP generated successfully`);
   otpStore[email] = otp;
+
   try {
-    await transporter.sendMail({
-      from: "kashyapdeepa018@gmail.com",
+    console.log(`[Diagnostic] Attempting to send email...`);
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "VacciLink OTP",
       text: `Your OTP is ${otp}`
     });
+    console.log(`✅ [Diagnostic] sendMail success. MessageId: ${info.messageId}`);
     res.json({ message: "OTP sent to email" });
   } catch (err) {
-    console.log(err);
-    res.json({ message: "Email error" });
+    console.error("❌ [Diagnostic] Transporter Error in /send-otp:");
+    console.error(err); // Log full error object including code, command, etc.
+    res.status(500).json({ message: "Email error", error: err.message, code: err.code, command: err.command });
   }
 });
 
@@ -1166,12 +1192,20 @@ app.post("/vaccinator/scan/send-otp", async (req, res) => {
       attempts: 0
     };
 
-    await transporter.sendMail({
-      from: "hospitrack58@gmail.com",
+    console.log(`\n--- [Diagnostic] /vaccinator/scan/send-otp route hit ---`);
+    console.log(`Recipient: ${parent.email}`);
+    console.log(`EMAIL_USER configured as: ${process.env.EMAIL_USER}`);
+    console.log(`EMAIL_PASS is present: ${!!process.env.EMAIL_PASS}`);
+    console.log(`[Diagnostic] Attempting to send email...`);
+
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_USER,
       to: parent.email,
       subject: "Vaccilink Verification OTP",
       text: `Your OTP is ${otp}`
     });
+
+    console.log(`✅ [Diagnostic] sendMail success. MessageId: ${info.messageId}`);
 
     const emailParts = parent.email.split("@");
 
@@ -1187,10 +1221,13 @@ app.post("/vaccinator/scan/send-otp", async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
+    console.error("❌ [Diagnostic] Error in /vaccinator/scan/send-otp:", error);
     res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Server error",
+      error: error.message,
+      code: error.code,
+      command: error.command
     });
   }
 });

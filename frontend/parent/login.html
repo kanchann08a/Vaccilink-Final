@@ -330,7 +330,6 @@
         }
 
         async function sendOTP() {
-
             const email = document.getElementById("loginEmail").value;
 
             if (!email) {
@@ -338,16 +337,25 @@
                 return;
             }
 
-            await fetch(`${API_BASE_URL}/send-otp`, {
+            try {
+                const response = await fetch(`${API_BASE_URL}/send-otp`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                });
 
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
+                const data = await response.json();
 
-            });
-
-            alert("OTP sent to your email");
-
+                if (response.ok) {
+                    alert("OTP sent to your email");
+                } else {
+                    alert(data.message || "Failed to send OTP");
+                    console.error("Server Error:", data.error || data.message);
+                }
+            } catch (err) {
+                console.error("Error sending OTP:", err);
+                alert("Network error. Could not send OTP.");
+            }
         }
 
 

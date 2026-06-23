@@ -1,650 +1,482 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - VacciLink</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VacciLink</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 
 </head>
+
 <body>
 
     <div id="navbar-container"></div>
 
 
 
-<main class="main-content">
+    <main class="main-content">
 
-<header class="top-bar">
+        <header class="top-bar">
 
-<div class="search-container">
-<input type="text" placeholder="Initiate search text...">
-</div>
-
-<div class="user-actions">
-<img src="../assets/images/parent-avatar.png" class="profile-avatar">
-<span class="user-name">English</span>
-</div>
-
-</header>
-
-
-<section class="welcome-section">
-<h2>Welcome back, <span id="parentName">Parent</span>!</h2>
-<p class="text-muted">Stay updated on <span id="childNameWelcome">child</span>'s health journey.</p>
-</section>
-
-
-
-<div class="dashboard-grid">
-
-<div class="grid-left">
-
-<div class="card baby-card">
-
-<div class="baby-info">
-
-<img src="../assets/images/baby-avatar.png" class="baby-photo">
-
-<div class="baby-details">
-
-<h3><span id="childNameText">Child Name</span> <span class="tag">Infant</span></h3>
-
-<p id="childDOB">Born -</p>
-
-<p id="childID">#----</p>
-
-<button class="btn-primary" onclick="location.href='profile.html'" style="margin-top:15px;">
-Go to Profile
-</button>
-
-</div>
-
-</div>
-
-<div class="qr-section">
-
-<img id="qrCode" class="qr-image" alt="Digital Health ID QR" role="button" tabindex="0">
-
-<p style="font-size:0.75rem;color:var(--text-muted);">Digital Health ID — tap to open profile</p>
-
-</div>
-
-</div>
-
-
-
-<div class="status-row">
-
-<div class="card status-card completed">
-<h4>Completed Vaccines</h4>
-<span class="status-value">7</span>
-</div>
-
-<div class="card status-card upcoming">
-<h4>Upcoming Vaccines</h4>
-<span class="status-value">2</span>
-</div>
-
-<div class="card status-card overdue">
-<h4>Overdue Vaccines</h4>
-<span class="status-value">0</span>
-</div>
-
-</div>
-
-
-        <div class="next-vaccine-card card">
-            <div>
-                <div style="text-transform: uppercase; font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; opacity: 0.8;">Priority Recommendation</div>
-                <h3>Next Vaccine: -</h3>
-                <p>Scheduled on -</p>
+            <div class="search-container">
+                <input type="text" placeholder="Initiate search text...">
             </div>
-            <button class="book-btn" onclick="location.href='appointment.html'">Book Now</button>
+
+            <div class="user-actions">
+                <img src="../assets/images/parent-avatar.png" class="profile-avatar">
+                <span class="user-name">English</span>
+            </div>
+
+        </header>
+
+
+        <section class="welcome-section">
+            <h2>Welcome back, <span id="parentName">Parent</span>!</h2>
+            <p class="text-muted">Stay updated on <span id="childNameWelcome">child</span>'s health journey.</p>
+        </section>
+
+
+
+        <div class="dashboard-grid">
+
+            <div class="grid-left">
+
+                <div class="card baby-card">
+
+                    <div class="baby-info">
+
+                        <img src="../assets/images/baby-avatar.png" class="baby-photo">
+
+                        <div class="baby-details">
+
+                            <h3><span id="childNameText">Child Name</span> <span class="tag">Infant</span></h3>
+
+                            <p id="childDOB">Born -</p>
+
+                            <p id="childID">#----</p>
+
+                            <button class="btn-primary" onclick="location.href='profile.html'" style="margin-top:15px;">
+                                Go to Profile
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="qr-section">
+
+                        <img id="qrCode" class="qr-image" alt="Digital Health ID QR" role="button" tabindex="0">
+
+                        <p style="font-size:0.75rem;color:var(--text-muted);">Digital Health ID — tap to open profile
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="status-row">
+
+                    <div class="card status-card completed">
+                        <h4>Completed Vaccines</h4>
+                        <span class="status-value">7</span>
+                    </div>
+
+                    <div class="card status-card upcoming">
+                        <h4>Upcoming Vaccines</h4>
+                        <span class="status-value">2</span>
+                    </div>
+
+                    <div class="card status-card overdue">
+                        <h4>Overdue Vaccines</h4>
+                        <span class="status-value">0</span>
+                    </div>
+
+                </div>
+
+
+                <div class="next-vaccine-card card">
+                    <div>
+                        <div
+                            style="text-transform: uppercase; font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; opacity: 0.8;">
+                            Priority Recommendation</div>
+                        <h3>Next Vaccine: -</h3>
+                        <p>Scheduled on -</p>
+                    </div>
+                    <button class="book-btn" onclick="location.href='appointment.html'">Book Now</button>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Vaccination Calendar</h3>
+                    <div id="vaccineCalendar" style="margin-top:15px; font-size: 0.9em;"></div>
+                    <p class="text-muted" style="text-align: center; margin-top: 20px; font-size: 0.85rem;">Click on any
+                        date to view details or book an appointment.</p>
+                    <button class="btn-primary"
+                        style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 15px; padding: 12px;"
+                        onclick="location.href='appointment.html'">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Book New Appointment
+                    </button>
+                </div>
+
+            </div>
+
+
+
+            <div class="grid-right">
+
+                <div class="card parent-card">
+
+                    <img src="../assets/images/parent-avatar.png" class="parent-photo">
+
+                    <h3 id="parentNameCard">Parent Name</h3>
+
+                    <p class="text-muted" id="parentPhone">Phone</p>
+
+                </div>
+
+
+
+                <div class="card">
+
+                    <h3>Recent Immunizations</h3>
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>NAME</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>OPV-1</td>
+                                    <td><span class="status-pill pill-upcoming">Upcoming</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Hep-B</td>
+                                    <td><span class="status-pill pill-completed">Completed</span></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <div class="card">
+                    <h3>Calendar Legend</h3>
+                    <div style="margin-top: 20px;">
+                        <div class="legend-item">
+                            <div class="legend-circle" style="background:#27ae60;"></div>
+                            <div class="legend-info">
+                                <h4>Scheduled</h4>
+                                <p>Appointment booked</p>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-circle" style="background:#0277bd;"></div>
+                            <div class="legend-info">
+                                <h4>Upcoming</h4>
+                                <p>Due date is near</p>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-circle" style="background:#e74c3c;"></div>
+                            <div class="legend-info">
+                                <h4>Overdue</h4>
+                                <p>Immediate action needed</p>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-circle" style="background:#95a5a6;"></div>
+                            <div class="legend-info">
+                                <h4>Completed</h4>
+                                <p>Vaccine already taken</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Need Help?</h3>
+                    <p class="text-muted" style="margin-top:5px; font-size: 0.9rem;">Call our vaccination support
+                        helpline.</p>
+                    <div
+                        style="display:flex; align-items:center; gap:10px; margin-top:15px; background:var(--light-blue); padding:12px; border-radius:8px;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--primary-blue)" stroke-width="2"
+                            fill="none">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                        <span
+                            style="font-weight:700; color:var(--primary-blue); font-size: 1.1rem;">1800-123-4567</span>
+                    </div>
+                    <button class="btn-primary btn-full" style="margin-top:15px; padding: 12px;"
+                        onclick="location.href='appointment.html'">Book Appointment</button>
+                </div>
+
+            </div>
+
         </div>
 
-<div class="card" style="margin-top: 20px;">
-<h3>Vaccination Calendar</h3>
-<div id="vaccineCalendar" style="margin-top:15px; font-size: 0.9em;"></div>
-<p class="text-muted" style="text-align: center; margin-top: 20px; font-size: 0.85rem;">Click on any date to view details or book an appointment.</p>
-<button class="btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 15px; padding: 12px;" onclick="location.href='appointment.html'">
-    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-    Book New Appointment
-</button>
-</div>
-
-</div>
-
-
-
-<div class="grid-right">
-
-<div class="card parent-card">
-
-<img src="../assets/images/parent-avatar.png" class="parent-photo">
-
-<h3 id="parentNameCard">Parent Name</h3>
-
-<p class="text-muted" id="parentPhone">Phone</p>
-
-</div>
-
-
-
-<div class="card">
-
-<h3>Recent Immunizations</h3>
-
-<div class="table-container">
-
-<table>
-
-<thead>
-<tr><th>NAME</th><th>STATUS</th></tr>
-</thead>
-
-<tbody>
-<tr>
-<td>OPV-1</td>
-<td><span class="status-pill pill-upcoming">Upcoming</span></td>
-</tr>
-
-<tr>
-<td>Hep-B</td>
-<td><span class="status-pill pill-completed">Completed</span></td>
-</tr>
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<div class="card">
-    <h3>Calendar Legend</h3>
-    <div style="margin-top: 20px;">
-        <div class="legend-item">
-            <div class="legend-circle" style="background:#27ae60;"></div>
-            <div class="legend-info">
-                <h4>Scheduled</h4>
-                <p>Appointment booked</p>
-            </div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-circle" style="background:#0277bd;"></div>
-            <div class="legend-info">
-                <h4>Upcoming</h4>
-                <p>Due date is near</p>
-            </div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-circle" style="background:#e74c3c;"></div>
-            <div class="legend-info">
-                <h4>Overdue</h4>
-                <p>Immediate action needed</p>
-            </div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-circle" style="background:#95a5a6;"></div>
-            <div class="legend-info">
-                <h4>Completed</h4>
-                <p>Vaccine already taken</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card">
-    <h3>Need Help?</h3>
-    <p class="text-muted" style="margin-top:5px; font-size: 0.9rem;">Call our vaccination support helpline.</p>
-    <div style="display:flex; align-items:center; gap:10px; margin-top:15px; background:var(--light-blue); padding:12px; border-radius:8px;">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--primary-blue)" stroke-width="2" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-        <span style="font-weight:700; color:var(--primary-blue); font-size: 1.1rem;">1800-123-4567</span>
-    </div>
-    <button class="btn-primary btn-full" style="margin-top:15px; padding: 12px;" onclick="location.href='appointment.html'">Book Appointment</button>
-</div>
-
-</div>
-
-</div>
-
-</main>
+    </main>
 
 
 
 
-<script>
+    <script>
 
-const API_BASE_URL = "https://vaccilink-final.onrender.com";
-const email = localStorage.getItem("parentEmail");
+        const API_BASE_URL = "https://vaccilink-final.onrender.com";
+        const email = localStorage.getItem("parentEmail");
 
-if(!email){
-window.location.href="login.html";
-}
-
-fetch(API_BASE_URL + "/parent/"+email)
-.then(res=>res.json())
-.then(data=>{
-
-if(!data || !data._id){
-window.location.href="login.html";
-return;
-}
-
-console.log(data);
-
-/* Parent info */
-
-document.getElementById("parentName").innerText =
-data.parentName || "Parent";
-
-document.getElementById("parentNameCard").innerText =
-data.parentName || "Parent";
-
-document.getElementById("parentPhone").innerText =
-data.phone || "Phone not added";
-
-/* Apply SVG Avatars */
-if (typeof applyAvatar === 'function') {
-    document.querySelectorAll(".profile-avatar").forEach(el => applyAvatar(el, "parent"));
-    document.querySelectorAll(".parent-photo").forEach(el => applyAvatar(el, "parent"));
-    document.querySelectorAll(".baby-photo").forEach(el => applyAvatar(el, "baby"));
-}
-
-/* Child info */
-
-document.getElementById("childNameText").innerText =
-data.childName || "Child";
-
-document.getElementById("childNameWelcome").innerText =
-data.childName || "Child";
-
-const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const dobParts = (data.childDOB || "").split("-");
-document.getElementById("childDOB").innerText =
-"Born - " + (dobParts.length === 3 ? dobParts[2]+" "+months[parseInt(dobParts[1])-1]+" "+dobParts[0] : "Not set");
-
-document.getElementById("childID").innerText =
-"#" + (data.childID || "----");
-
-/* QR Code — stable verify URL per child (server) */
-(function loadDashboardQr() {
-const qrEl = document.getElementById("qrCode");
-function goProfile() { window.location.href = "profile.html"; }
-qrEl.addEventListener("click", goProfile);
-qrEl.addEventListener("keydown", function (e) {
-if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goProfile(); }
-});
-fetch(API_BASE_URL + "/parent/qr-verify-url/" + encodeURIComponent(data.childID) + "?origin=" + encodeURIComponent(window.location.origin))
-.then(function (r) { return r.json(); })
-.then(function (q) {
-if (q && q.verify_url) {
-qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(q.verify_url);
-qrEl.style.cursor = "pointer";
-} else {
-qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
-}
-})
-.catch(function () {
-qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
-});
-})();
-
-// Vaccination Logic
-fetch(API_BASE_URL + "/child/" + data.childID)
-.then(res=>res.json())
-.then(childData=>{
-const merged = childData.vaccinationHistory || [];
-
-let completedCount = 0;
-let upcomingCount = 0;
-let overdueCount = 0;
-let nextVaccine = null;
-
-merged.forEach(v => {
-if (v.status === "completed") completedCount++;
-else if (v.status === "overdue") overdueCount++;
-else if (v.status === "upcoming" || v.status === "scheduled") {
-if(v.status === "upcoming") upcomingCount++;
-// Use dueDate for priority if available, otherwise scheduledDate
-const vDate = new Date(v.scheduledDate || v.dueDate);
-if (!nextVaccine || vDate < nextVaccine.date) {
-nextVaccine = { name: v.vaccineName, date: vDate, status: v.status };
-}
-}
-});
-
-const completedValue = document.querySelector(".status-card.completed .status-value");
-const upcomingValue = document.querySelector(".status-card.upcoming .status-value");
-const overdueValue = document.querySelector(".status-card.overdue .status-value");
-
-if (completedValue) completedValue.innerText = completedCount;
-if (upcomingValue) upcomingValue.innerText = upcomingCount;
-if (overdueValue) overdueValue.innerText = overdueCount;
-
-const nextVaccineCard = document.querySelector(".status-row").nextElementSibling;
-if (nextVaccineCard && nextVaccineCard.classList.contains("card")) {
-if (nextVaccine) {
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const formattedDate = monthNames[nextVaccine.date.getMonth()] + " " + nextVaccine.date.getDate() + ", " + nextVaccine.date.getFullYear();
-nextVaccineCard.querySelector("h3").innerText = "Next Vaccine: " + nextVaccine.name;
-nextVaccineCard.querySelector("p").innerText = "Scheduled on " + formattedDate;
-} else {
-nextVaccineCard.querySelector("h3").innerText = "All Vaccines Completed!";
-nextVaccineCard.querySelector("p").innerText = "No upcoming schedules.";
-}
-}
-
-// Render Calendar
-const calendarEl = document.getElementById('vaccineCalendar');
-if(calendarEl) {
-    const eventsArray = merged.map(v => {
-        let evColor = "#0277bd";
-        let evTitle = "Upcoming: " + v.vaccineName;
-        let pStatus = "Upcoming";
-        
-        if(v.status === "scheduled") {
-            evColor = "#27ae60";
-            evTitle = "Appointment: " + v.vaccineName;
-            pStatus = "Scheduled";
-        } else if(v.status === "overdue") {
-            evColor = "#e74c3c";
-            evTitle = "Overdue: " + v.vaccineName;
-            pStatus = "Overdue";
-        } else if(v.status === "completed") {
-            evColor = "#95a5a6";
-            evTitle = "Completed: " + v.vaccineName;
-            pStatus = "Completed";
+        if (!email) {
+            window.location.href = "login.html";
         }
 
-        const dateToUse = new Date(v.scheduledDate || v.dueDate);
-        const pad = n => String(n).padStart(2, '0');
-        const startStr = dateToUse.getFullYear() + '-' + pad(dateToUse.getMonth() + 1) + '-' + pad(dateToUse.getDate());
-        
-        return {
-            title: evTitle,
-            start: startStr,
-            color: evColor,
-            extendedProps: { 
-                name: v.vaccineName, 
-                dose: v.doseNumber, 
-                statusStr: pStatus, 
-                hospital: v.hospital || "" 
-            }
-        };
-    });
+        fetch(API_BASE_URL + "/parent/" + email)
+            .then(res => res.json())
+            .then(data => {
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'title',
-            right: 'today dayGridMonth,timeGridWeek,listWeek'
-        },
-        events: eventsArray,
-        eventClick: function(info) {
-            window.location.href = `appointment.html?vaccineName=${encodeURIComponent(info.event.extendedProps.name)}&doseNumber=${info.event.extendedProps.dose}`;
-        },
-        eventMouseEnter: function(info) {
-            let tooltipStr = `<strong style="color:var(--primary-blue); font-size:1rem;">${info.event.extendedProps.name}</strong><br>Status: <strong>${info.event.extendedProps.statusStr}</strong>`;
-            
-            if (info.event.extendedProps.hospital) {
-                tooltipStr += `<br>Hospital: ${info.event.extendedProps.hospital}`;
-            }
+                if (!data || !data._id) {
+                    window.location.href = "login.html";
+                    return;
+                }
 
-            let tooltipEl = document.createElement('div');
-            tooltipEl.className = 'fc-tooltip';
-            tooltipEl.innerHTML = tooltipStr;
-            document.body.appendChild(tooltipEl);
-            
-            info.el.addEventListener('mousemove', function(e) {
-                tooltipEl.style.top = (e.pageY + 15) + 'px';
-                tooltipEl.style.left = (e.pageX + 15) + 'px';
-            });
-            info.el.addEventListener('mouseleave', function() {
-                tooltipEl.remove();
-            });
-        }
-    });
-    calendar.render();
-}
+                console.log(data);
 
-// Update Recent Immunizations Table
-const tbody = document.querySelector(".table-container tbody");
-if(tbody) {
-    let tableHTML = "";
-    // Show top 5 relevant vaccines (completed or overdue first)
-    const sorted = [...merged].sort((a,b) => {
-        const order = { "overdue": 1, "completed": 2, "scheduled": 3, "upcoming": 4 };
-        return (order[a.status] || 99) - (order[b.status] || 99);
-    });
-    sorted.slice(0, 5).forEach(v => {
-        let statusHTML = "";
-        if(v.status === "completed") {
-            statusHTML = `<span class="tag-completed">Completed</span>`;
-            if (v.certificateId) {
-                statusHTML += `<br><a href="../verify.html?id=${v.certificateId}" target="_blank" style="font-size:0.75rem;color:var(--tag-completed-text);text-decoration:none;display:inline-block;margin-top:4px;">📄 View Cert</a>`;
-            }
-        }
-        else if(v.status === "overdue") statusHTML = `<span class="tag-overdue">Overdue</span>`;
-        else if(v.status === "scheduled") statusHTML = `<span class="tag-scheduled">Scheduled</span>`;
-        else statusHTML = `<span class="tag-scheduled" style="background: #fef3c7; color: #92400e;">Upcoming</span>`;
-        tableHTML += `<tr><td>${v.vaccineName}</td><td>${statusHTML}</td></tr>`;
-    });
-    tbody.innerHTML = tableHTML;
-}
+                /* Parent info */
 
-});
+                document.getElementById("parentName").innerText =
+                    data.parentName || "Parent";
 
-})
-.catch(err => {
-    console.error("Dashboard load failed:", err);
-    window.location.href = "login.html";
-});
+                document.getElementById("parentNameCard").innerText =
+                    data.parentName || "Parent";
 
-</script>
+                document.getElementById("parentPhone").innerText =
+                    data.phone || "Phone not added";
+
+                /* Apply SVG Avatars */
+                if (typeof applyAvatar === 'function') {
+                    document.querySelectorAll(".profile-avatar").forEach(el => applyAvatar(el, "parent"));
+                    document.querySelectorAll(".parent-photo").forEach(el => applyAvatar(el, "parent"));
+                    document.querySelectorAll(".baby-photo").forEach(el => applyAvatar(el, "baby"));
+                }
+
+                /* Child info */
+
+                document.getElementById("childNameText").innerText =
+                    data.childName || "Child";
+
+                document.getElementById("childNameWelcome").innerText =
+                    data.childName || "Child";
+
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const dobParts = (data.childDOB || "").split("-");
+                document.getElementById("childDOB").innerText =
+                    "Born - " + (dobParts.length === 3 ? dobParts[2] + " " + months[parseInt(dobParts[1]) - 1] + " " + dobParts[0] : "Not set");
+
+                document.getElementById("childID").innerText =
+                    "#" + (data.childID || "----");
+
+                /* QR Code — stable verify URL per child (server) */
+                (function loadDashboardQr() {
+                    const qrEl = document.getElementById("qrCode");
+                    function goProfile() { window.location.href = "profile.html"; }
+                    qrEl.addEventListener("click", goProfile);
+                    qrEl.addEventListener("keydown", function (e) {
+                        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goProfile(); }
+                    });
+                    fetch(API_BASE_URL + "/parent/qr-verify-url/" + encodeURIComponent(data.childID) + "?origin=" + encodeURIComponent(window.location.origin))
+                        .then(function (r) { return r.json(); })
+                        .then(function (q) {
+                            if (q && q.verify_url) {
+                                qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(q.verify_url);
+                                qrEl.style.cursor = "pointer";
+                            } else {
+                                qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
+                            }
+                        })
+                        .catch(function () {
+                            qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
+                        });
+                })();
+
+                // Vaccination Logic
+                fetch(API_BASE_URL + "/child/" + data.childID)
+                    .then(res => res.json())
+                    .then(childData => {
+                        const merged = childData.vaccinationHistory || [];
+
+                        let completedCount = 0;
+                        let upcomingCount = 0;
+                        let overdueCount = 0;
+                        let nextVaccine = null;
+
+                        merged.forEach(v => {
+                            if (v.status === "completed") completedCount++;
+                            else if (v.status === "overdue") overdueCount++;
+                            else if (v.status === "upcoming" || v.status === "scheduled") {
+                                if (v.status === "upcoming") upcomingCount++;
+                                // Use dueDate for priority if available, otherwise scheduledDate
+                                const vDate = new Date(v.scheduledDate || v.dueDate);
+                                if (!nextVaccine || vDate < nextVaccine.date) {
+                                    nextVaccine = { name: v.vaccineName, date: vDate, status: v.status };
+                                }
+                            }
+                        });
+
+                        const completedValue = document.querySelector(".status-card.completed .status-value");
+                        const upcomingValue = document.querySelector(".status-card.upcoming .status-value");
+                        const overdueValue = document.querySelector(".status-card.overdue .status-value");
+
+                        if (completedValue) completedValue.innerText = completedCount;
+                        if (upcomingValue) upcomingValue.innerText = upcomingCount;
+                        if (overdueValue) overdueValue.innerText = overdueCount;
+
+                        const nextVaccineCard = document.querySelector(".status-row").nextElementSibling;
+                        if (nextVaccineCard && nextVaccineCard.classList.contains("card")) {
+                            if (nextVaccine) {
+                                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                                const formattedDate = monthNames[nextVaccine.date.getMonth()] + " " + nextVaccine.date.getDate() + ", " + nextVaccine.date.getFullYear();
+                                nextVaccineCard.querySelector("h3").innerText = "Next Vaccine: " + nextVaccine.name;
+                                nextVaccineCard.querySelector("p").innerText = "Scheduled on " + formattedDate;
+                            } else {
+                                nextVaccineCard.querySelector("h3").innerText = "All Vaccines Completed!";
+                                nextVaccineCard.querySelector("p").innerText = "No upcoming schedules.";
+                            }
+                        }
+
+                        // Render Calendar
+                        const calendarEl = document.getElementById('vaccineCalendar');
+                        if (calendarEl) {
+                            const eventsArray = merged.map(v => {
+                                let evColor = "#0277bd";
+                                let evTitle = "Upcoming: " + v.vaccineName;
+                                let pStatus = "Upcoming";
+
+                                if (v.status === "scheduled") {
+                                    evColor = "#27ae60";
+                                    evTitle = "Appointment: " + v.vaccineName;
+                                    pStatus = "Scheduled";
+                                } else if (v.status === "overdue") {
+                                    evColor = "#e74c3c";
+                                    evTitle = "Overdue: " + v.vaccineName;
+                                    pStatus = "Overdue";
+                                } else if (v.status === "completed") {
+                                    evColor = "#95a5a6";
+                                    evTitle = "Completed: " + v.vaccineName;
+                                    pStatus = "Completed";
+                                }
+
+                                const dateToUse = new Date(v.scheduledDate || v.dueDate);
+                                const pad = n => String(n).padStart(2, '0');
+                                const startStr = dateToUse.getFullYear() + '-' + pad(dateToUse.getMonth() + 1) + '-' + pad(dateToUse.getDate());
+
+                                return {
+                                    title: evTitle,
+                                    start: startStr,
+                                    color: evColor,
+                                    extendedProps: {
+                                        name: v.vaccineName,
+                                        dose: v.doseNumber,
+                                        statusStr: pStatus,
+                                        hospital: v.hospital || ""
+                                    }
+                                };
+                            });
+
+                            const calendar = new FullCalendar.Calendar(calendarEl, {
+                                initialView: 'dayGridMonth',
+                                headerToolbar: {
+                                    left: 'title',
+                                    right: 'today dayGridMonth,timeGridWeek,listWeek'
+                                },
+                                events: eventsArray,
+                                eventClick: function (info) {
+                                    window.location.href = `appointment.html?vaccineName=${encodeURIComponent(info.event.extendedProps.name)}&doseNumber=${info.event.extendedProps.dose}`;
+                                },
+                                eventMouseEnter: function (info) {
+                                    let tooltipStr = `<strong style="color:var(--primary-blue); font-size:1rem;">${info.event.extendedProps.name}</strong><br>Status: <strong>${info.event.extendedProps.statusStr}</strong>`;
+
+                                    if (info.event.extendedProps.hospital) {
+                                        tooltipStr += `<br>Hospital: ${info.event.extendedProps.hospital}`;
+                                    }
+
+                                    let tooltipEl = document.createElement('div');
+                                    tooltipEl.className = 'fc-tooltip';
+                                    tooltipEl.innerHTML = tooltipStr;
+                                    document.body.appendChild(tooltipEl);
+
+                                    info.el.addEventListener('mousemove', function (e) {
+                                        tooltipEl.style.top = (e.pageY + 15) + 'px';
+                                        tooltipEl.style.left = (e.pageX + 15) + 'px';
+                                    });
+                                    info.el.addEventListener('mouseleave', function () {
+                                        tooltipEl.remove();
+                                    });
+                                }
+                            });
+                            calendar.render();
+                        }
+
+                        // Update Recent Immunizations Table
+                        const tbody = document.querySelector(".table-container tbody");
+                        if (tbody) {
+                            let tableHTML = "";
+                            // Show top 5 relevant vaccines (completed or overdue first)
+                            const sorted = [...merged].sort((a, b) => {
+                                const order = { "overdue": 1, "completed": 2, "scheduled": 3, "upcoming": 4 };
+                                return (order[a.status] || 99) - (order[b.status] || 99);
+                            });
+                            sorted.slice(0, 5).forEach(v => {
+                                let statusHTML = "";
+                                if (v.status === "completed") {
+                                    statusHTML = `<span class="tag-completed">Completed</span>`;
+                                    if (v.certificateId) {
+                                        statusHTML += `<br><a href="../verify.html?id=${v.certificateId}" target="_blank" style="font-size:0.75rem;color:var(--tag-completed-text);text-decoration:none;display:inline-block;margin-top:4px;">📄 View Cert</a>`;
+                                    }
+                                }
+                                else if (v.status === "overdue") statusHTML = `<span class="tag-overdue">Overdue</span>`;
+                                else if (v.status === "scheduled") statusHTML = `<span class="tag-scheduled">Scheduled</span>`;
+                                else statusHTML = `<span class="tag-scheduled" style="background: #fef3c7; color: #92400e;">Upcoming</span>`;
+                                tableHTML += `<tr><td>${v.vaccineName}</td><td>${statusHTML}</td></tr>`;
+                            });
+                            tbody.innerHTML = tableHTML;
+                        }
+
+                    });
+
+            })
+            .catch(err => {
+                console.error("Dashboard load failed:", err);
+                window.location.href = "login.html";
+              </script>
     <script src="../js/avatars.js"></script>
     <script src="navbar-loader.js"></script>
-
-<!-- AI Chatbot — VacciLink AI Assistant -->
-<button class="chatbot-fab" id="chatbotFab" title="VacciLink AI Assistant" aria-label="Open AI Assistant">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
-    </svg>
-</button>
-
-<div class="chatbot-window" id="chatbotWindow">
-    <!-- Header -->
-    <div class="chatbot-header">
-        <div class="chatbot-avatar">
-            <svg viewBox="0 0 24 24"><path d="M19.5 9.5c-.17 0-.34.02-.5.05V7c0-2.76-2.24-5-5-5h-4C7.24 2 5 4.24 5 7v2.55c-.16-.03-.33-.05-.5-.05C3.12 9.5 2 10.62 2 12s1.12 2.5 2.5 2.5c.17 0 .34-.02.5-.05V17c0 2.76 2.24 5 5 5h4c2.76 0 5-2.24 5-5v-2.55c.16.03.33.05.5.05 1.38 0 2.5-1.12 2.5-2.5s-1.12-2.5-2.5-2.5zM9 14c-.83 0-1.5-.67-1.5-1.5S8.17 11 9 11s1.5.67 1.5 1.5S9.83 14 9 14zm6 0c-.83 0-1.5-.67-1.5-1.5S14.17 11 15 11s1.5.67 1.5 1.5S15.83 14 15 14z"/></svg>
-        </div>
-        <div class="chatbot-header-info">
-            <h4>VacciLink AI</h4>
-            <span><span class="status-dot"></span> Online — Ready to help</span>
-        </div>
-        <button class="chatbot-close" id="chatbotClose" aria-label="Close chat">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-    </div>
-
-    <!-- Messages -->
-    <div class="chatbot-messages" id="chatbotMessages"></div>
-
-    <!-- Quick Actions -->
-    <div class="chatbot-quick-actions" id="chatbotQuickActions">
-        <button class="quick-btn" data-msg="What vaccines are pending for my child?">📋 Pending Vaccines</button>
-        <button class="quick-btn" data-msg="When is my child's next vaccination?">💉 Next Vaccine</button>
-        <button class="quick-btn" data-msg="Show vaccination history">📜 History</button>
-        <button class="quick-btn" data-msg="What is MMR vaccine?">❓ About MMR</button>
-        <button class="quick-btn" data-msg="What are common vaccine side effects?">⚠️ Side Effects</button>
-    </div>
-
-    <!-- Input -->
-    <div class="chatbot-input-area">
-        <input type="text" id="chatbotInput" placeholder="Ask about vaccines or your child's records..." autocomplete="off" />
-        <button class="chatbot-send-btn" id="chatbotSend" aria-label="Send message">
-            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
-    </div>
-</div>
-
-<script>
-(function() {
-    const API_BASE = "https://vaccilink-final.onrender.com";
-    const parentEmail = localStorage.getItem("parentEmail");
-
-    const fab = document.getElementById("chatbotFab");
-    const win = document.getElementById("chatbotWindow");
-    const closeBtn = document.getElementById("chatbotClose");
-    const messagesEl = document.getElementById("chatbotMessages");
-    const inputEl = document.getElementById("chatbotInput");
-    const sendBtn = document.getElementById("chatbotSend");
-    const quickActions = document.getElementById("chatbotQuickActions");
-
-    let isOpen = false;
-    let isLoading = false;
-    let hasShownWelcome = false;
-
-    // Toggle chat window
-    function toggleChat() {
-        isOpen = !isOpen;
-        win.classList.toggle("open", isOpen);
-        fab.classList.toggle("active", isOpen);
-
-        if (isOpen && !hasShownWelcome) {
-            hasShownWelcome = true;
-            addBotMessage("Hello! 👋 I'm **VacciLink AI**. I can help you with your child's vaccination records and general vaccination information.\n\nTry asking me:\n• What vaccines are pending for my child?\n• When is my child's next vaccination?\n• What is the MMR vaccine?", null);
-        }
-
-        if (isOpen) {
-            setTimeout(() => inputEl.focus(), 350);
-        }
-    }
-
-    fab.addEventListener("click", toggleChat);
-    closeBtn.addEventListener("click", toggleChat);
-
-    // Format message text (basic markdown bold + newlines)
-    function formatMessage(text) {
-        return text
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n/g, '<br>');
-    }
-
-    // Add a bot message
-    function addBotMessage(text, source) {
-        const div = document.createElement("div");
-        div.className = "chat-msg bot";
-        let sourceHTML = '';
-        if (source === 'database') {
-            sourceHTML = '<span class="msg-source database">📊 From Records</span>';
-        } else if (source === 'ai') {
-            sourceHTML = '<span class="msg-source ai">🤖 AI Response</span>';
-        }
-        div.innerHTML = `
-            <div class="msg-icon">🤖</div>
-            <div class="msg-bubble">${formatMessage(text)}${sourceHTML}</div>
-        `;
-        messagesEl.appendChild(div);
-        scrollToBottom();
-    }
-
-    // Add a user message
-    function addUserMessage(text) {
-        const div = document.createElement("div");
-        div.className = "chat-msg user";
-        div.innerHTML = `
-            <div class="msg-icon">👤</div>
-            <div class="msg-bubble">${formatMessage(text)}</div>
-        `;
-        messagesEl.appendChild(div);
-        scrollToBottom();
-    }
-
-    // Typing indicator
-    function showTyping() {
-        const div = document.createElement("div");
-        div.className = "typing-indicator";
-        div.id = "typingIndicator";
-        div.innerHTML = `
-            <div class="msg-icon">🤖</div>
-            <div class="typing-dots"><span></span><span></span><span></span></div>
-        `;
-        messagesEl.appendChild(div);
-        scrollToBottom();
-    }
-
-    function hideTyping() {
-        const el = document.getElementById("typingIndicator");
-        if (el) el.remove();
-    }
-
-    function scrollToBottom() {
-        setTimeout(() => {
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-        }, 50);
-    }
-
-    // Send message
-    async function sendMessage(text) {
-        if (!text.trim() || isLoading) return;
-
-        addUserMessage(text);
-        inputEl.value = "";
-        isLoading = true;
-        sendBtn.disabled = true;
-        showTyping();
-
-        try {
-            const response = await fetch(API_BASE + "/api/chatbot", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: text, email: parentEmail })
-            });
-
-            const data = await response.json();
-            hideTyping();
-
-            if (data.reply) {
-                addBotMessage(data.reply, data.source || null);
-            } else {
-                addBotMessage("Sorry, I couldn't process that. Please try again.", null);
-            }
-        } catch (err) {
-            hideTyping();
-            addBotMessage("I'm having trouble connecting right now. Please check your internet connection and try again.", null);
-            console.error("Chatbot error:", err);
-        }
-
-        isLoading = false;
-        sendBtn.disabled = false;
-        inputEl.focus();
-    }
-
-    // Event listeners
-    sendBtn.addEventListener("click", () => sendMessage(inputEl.value));
-
-    inputEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage(inputEl.value);
-        }
-    });
-
-    // Quick action buttons
-    quickActions.addEventListener("click", (e) => {
-        const btn = e.target.closest(".quick-btn");
-        if (btn) {
-            sendMessage(btn.dataset.msg);
-        }
-    });
-})();
-</script>
+</body>          });
+        })();
+    </script>
 
 </body>
+
 </html>

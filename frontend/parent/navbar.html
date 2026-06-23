@@ -44,3 +44,53 @@
         </div>
     </nav>
 </aside>
+
+<!-- AI Chatbot — VacciLink AI Assistant -->
+<button class="chatbot-fab" id="chatbotFab" title="VacciLink AI Assistant" aria-label="Open AI Assistant">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z" />
+    </svg>
+</button>
+
+<div class="chatbot-window" id="chatbotWindow">
+    <!-- Header -->
+    <div class="chatbot-header">
+        <div class="chatbot-avatar">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.5 9.5c-.17 0-.34.02-.5.05V7c0-2.76-2.24-5-5-5h-4C7.24 2 5 4.24 5 7v2.55c-.16-.03-.33-.05-.5-.05C3.12 9.5 2 10.62 2 12s1.12 2.5 2.5 2.5c.17 0 .34-.02.5-.05V17c0 2.76 2.24 5 5 5h4c2.76 0 5-2.24 5-5v-2.55c.16.03.33.05.5.05 1.38 0 2.5-1.12 2.5-2.5s-1.12-2.5-2.5-2.5zM9 14c-.83 0-1.5-.67-1.5-1.5S8.17 11 9 11s1.5.67 1.5 1.5S9.83 14 9 14zm6 0c-.83 0-1.5-.67-1.5-1.5S14.17 11 15 11s1.5.67 1.5 1.5S15.83 14 15 14z" />
+            </svg>
+        </div>
+        <div class="chatbot-header-info">
+            <h4>VacciLink AI</h4>
+            <span><span class="status-dot"></span> Online — Ready to help</span>
+        </div>
+        <button class="chatbot-close" id="chatbotClose" aria-label="Close chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chatbot-messages" id="chatbotMessages"></div>
+
+    <!-- Quick Actions -->
+    <div class="chatbot-quick-actions" id="chatbotQuickActions">
+        <button class="quick-btn" data-msg="What vaccines are pending for my child?">📋 Pending Vaccines</button>
+        <button class="quick-btn" data-msg="When is my child's next vaccination?">💉 Next Vaccine</button>
+        <button class="quick-btn" data-msg="Show vaccination history">📜 History</button>
+        <button class="quick-btn" data-msg="What is MMR vaccine?">❓ About MMR</button>
+        <button class="quick-btn" data-msg="What are common vaccine side effects?">⚠️ Side Effects</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chatbot-input-area">
+        <input type="text" id="chatbotInput" placeholder="Ask about vaccines or your child's records..." autocomplete="off" />
+        <button class="chatbot-send-btn" id="chatbotSend" aria-label="Send message">
+            <svg viewBox="0 0 24 24">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+        </button>
+    </div>
+</div>

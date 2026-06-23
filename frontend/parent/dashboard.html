@@ -28,7 +28,7 @@
             </div>
 
             <div class="user-actions">
-                <img src="../assets/images/parent-avatar.png" class="profile-avatar">
+                <img src="/icons/parent.svg" class="profile-avatar">
                 <span class="user-name">English</span>
             </div>
 
@@ -50,7 +50,7 @@
 
                     <div class="baby-info">
 
-                        <img src="../assets/images/baby-avatar.png" class="baby-photo">
+                        <img src="/icons/baby.svg" class="baby-photo">
 
                         <div class="baby-details">
 
@@ -139,7 +139,7 @@
 
                 <div class="card parent-card">
 
-                    <img src="../assets/images/parent-avatar.png" class="parent-photo">
+                    <img src="/icons/parent.svg" class="parent-photo">
 
                     <h3 id="parentNameCard">Parent Name</h3>
 
@@ -245,7 +245,6 @@
 
 
     <script>
-
         const API_BASE_URL = "https://vaccilink-final.onrender.com";
         const email = localStorage.getItem("parentEmail");
 
@@ -253,83 +252,82 @@
             window.location.href = "login.html";
         }
 
-        fetch(API_BASE_URL + "/parent/" + email)
-            .then(res => res.json())
-            .then(data => {
-
+        async function loadDashboard() {
+            try {
+                // Fetch parent details
+                const parentRes = await fetch(API_BASE_URL + "/parent/" + email);
+                if (!parentRes.ok) throw new Error("Failed to load parent data");
+                
+                const data = await parentRes.json();
                 if (!data || !data._id) {
                     window.location.href = "login.html";
                     return;
                 }
 
-                console.log(data);
+                console.log("Parent Data:", data);
 
                 /* Parent info */
-
-                document.getElementById("parentName").innerText =
-                    data.parentName || "Parent";
-
-                document.getElementById("parentNameCard").innerText =
-                    data.parentName || "Parent";
-
-                document.getElementById("parentPhone").innerText =
-                    data.phone || "Phone not added";
-
-                /* Apply SVG Avatars */
-                if (typeof applyAvatar === 'function') {
-                    document.querySelectorAll(".profile-avatar").forEach(el => applyAvatar(el, "parent"));
-                    document.querySelectorAll(".parent-photo").forEach(el => applyAvatar(el, "parent"));
-                    document.querySelectorAll(".baby-photo").forEach(el => applyAvatar(el, "baby"));
-                }
+                document.getElementById("parentName").innerText = data.parentName || "Parent";
+                document.getElementById("parentNameCard").innerText = data.parentName || "Parent";
+                document.getElementById("parentPhone").innerText = data.phone || "Phone not added";
 
                 /* Child info */
-
-                document.getElementById("childNameText").innerText =
-                    data.childName || "Child";
-
-                document.getElementById("childNameWelcome").innerText =
-                    data.childName || "Child";
+                document.getElementById("childNameText").innerText = data.childName || "Child";
+                document.getElementById("childNameWelcome").innerText = data.childName || "Child";
 
                 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 const dobParts = (data.childDOB || "").split("-");
                 document.getElementById("childDOB").innerText =
                     "Born - " + (dobParts.length === 3 ? dobParts[2] + " " + months[parseInt(dobParts[1]) - 1] + " " + dobParts[0] : "Not set");
+                document.getElementById("childID").innerText = "#" + (data.childID || "----");
 
-                document.getElementById("childID").innerText =
-                    "#" + (data.childID || "----");
+                /* Apply SVG Avatars */
+                if (typeof applyAvatar === 'function') {
+                    try {
+                        document.querySelectorAll(".profile-avatar").forEach(el => applyAvatar(el, "parent"));
+                        document.querySelectorAll(".parent-photo").forEach(el => applyAvatar(el, "parent"));
+                        document.querySelectorAll(".baby-photo").forEach(el => applyAvatar(el, "baby"));
+                    } catch (e) {
+                        console.warn("Avatar assignment failed softly:", e);
+                    }
+                }
 
-                /* QR Code — stable verify URL per child (server) */
-                (function loadDashboardQr() {
+                /* QR Code */
+                try {
                     const qrEl = document.getElementById("qrCode");
-                    function goProfile() { window.location.href = "profile.html"; }
-                    qrEl.addEventListener("click", goProfile);
-                    qrEl.addEventListener("keydown", function (e) {
-                        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goProfile(); }
-                    });
-                    fetch(API_BASE_URL + "/parent/qr-verify-url/" + encodeURIComponent(data.childID) + "?origin=" + encodeURIComponent(window.location.origin))
-                        .then(function (r) { return r.json(); })
-                        .then(function (q) {
-                            if (q && q.verify_url) {
-                                qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(q.verify_url);
-                                qrEl.style.cursor = "pointer";
-                            } else {
-                                qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
-                            }
-                        })
-                        .catch(function () {
-                            qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
+                    if (qrEl) {
+                        qrEl.style.cursor = "pointer";
+                        const goProfile = () => { window.location.href = "profile.html"; };
+                        qrEl.addEventListener("click", goProfile);
+                        qrEl.addEventListener("keydown", (e) => {
+                            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goProfile(); }
                         });
-                })();
+
+                        const qRes = await fetch(API_BASE_URL + "/parent/qr-verify-url/" + encodeURIComponent(data.childID) + "?origin=" + encodeURIComponent(window.location.origin));
+                        const qData = await qRes.json();
+                        
+                        if (qData && qData.verify_url) {
+                            qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(qData.verify_url);
+                        } else {
+                            qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
+                        }
+                    }
+                } catch (err) {
+                    console.warn("QR code load failed softly:", err);
+                    const qrEl = document.getElementById("qrCode");
+                    if (qrEl) qrEl.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent("VacciLink-" + (data.childID || ""));
+                }
 
                 // Vaccination Logic
-                fetch(API_BASE_URL + "/child/" + data.childID)
-                    .then(res => res.json())
-                    .then(childData => {
+                if (data.childID) {
+                    try {
+                        const childRes = await fetch(API_BASE_URL + "/child/" + data.childID);
+                        if (!childRes.ok) throw new Error("Failed to load child vaccination data");
+                        
+                        const childData = await childRes.json();
                         const merged = childData.vaccinationHistory || [];
 
-                        let completedCount = 0;
-                        let upcomingCount = 0;
-                        let overdueCount = 0;
+                        let completedCount = 0, upcomingCount = 0, overdueCount = 0;
                         let nextVaccine = null;
 
                         merged.forEach(v => {
@@ -337,7 +335,6 @@
                             else if (v.status === "overdue") overdueCount++;
                             else if (v.status === "upcoming" || v.status === "scheduled") {
                                 if (v.status === "upcoming") upcomingCount++;
-                                // Use dueDate for priority if available, otherwise scheduledDate
                                 const vDate = new Date(v.scheduledDate || v.dueDate);
                                 if (!nextVaccine || vDate < nextVaccine.date) {
                                     nextVaccine = { name: v.vaccineName, date: vDate, status: v.status };
@@ -356,8 +353,7 @@
                         const nextVaccineCard = document.querySelector(".status-row").nextElementSibling;
                         if (nextVaccineCard && nextVaccineCard.classList.contains("card")) {
                             if (nextVaccine) {
-                                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                                const formattedDate = monthNames[nextVaccine.date.getMonth()] + " " + nextVaccine.date.getDate() + ", " + nextVaccine.date.getFullYear();
+                                const formattedDate = months[nextVaccine.date.getMonth()] + " " + nextVaccine.date.getDate() + ", " + nextVaccine.date.getFullYear();
                                 nextVaccineCard.querySelector("h3").innerText = "Next Vaccine: " + nextVaccine.name;
                                 nextVaccineCard.querySelector("p").innerText = "Scheduled on " + formattedDate;
                             } else {
@@ -368,82 +364,55 @@
 
                         // Render Calendar
                         const calendarEl = document.getElementById('vaccineCalendar');
-                        if (calendarEl) {
-                            const eventsArray = merged.map(v => {
-                                let evColor = "#0277bd";
-                                let evTitle = "Upcoming: " + v.vaccineName;
-                                let pStatus = "Upcoming";
+                        if (calendarEl && typeof FullCalendar !== "undefined") {
+                            try {
+                                const eventsArray = merged.map(v => {
+                                    let evColor = "#0277bd", evTitle = "Upcoming: " + v.vaccineName, pStatus = "Upcoming";
+                                    if (v.status === "scheduled") { evColor = "#27ae60"; evTitle = "Appointment: " + v.vaccineName; pStatus = "Scheduled"; } 
+                                    else if (v.status === "overdue") { evColor = "#e74c3c"; evTitle = "Overdue: " + v.vaccineName; pStatus = "Overdue"; } 
+                                    else if (v.status === "completed") { evColor = "#95a5a6"; evTitle = "Completed: " + v.vaccineName; pStatus = "Completed"; }
 
-                                if (v.status === "scheduled") {
-                                    evColor = "#27ae60";
-                                    evTitle = "Appointment: " + v.vaccineName;
-                                    pStatus = "Scheduled";
-                                } else if (v.status === "overdue") {
-                                    evColor = "#e74c3c";
-                                    evTitle = "Overdue: " + v.vaccineName;
-                                    pStatus = "Overdue";
-                                } else if (v.status === "completed") {
-                                    evColor = "#95a5a6";
-                                    evTitle = "Completed: " + v.vaccineName;
-                                    pStatus = "Completed";
-                                }
+                                    const dateToUse = new Date(v.scheduledDate || v.dueDate);
+                                    const pad = n => String(n).padStart(2, '0');
+                                    const startStr = dateToUse.getFullYear() + '-' + pad(dateToUse.getMonth() + 1) + '-' + pad(dateToUse.getDate());
 
-                                const dateToUse = new Date(v.scheduledDate || v.dueDate);
-                                const pad = n => String(n).padStart(2, '0');
-                                const startStr = dateToUse.getFullYear() + '-' + pad(dateToUse.getMonth() + 1) + '-' + pad(dateToUse.getDate());
+                                    return {
+                                        title: evTitle, start: startStr, color: evColor,
+                                        extendedProps: { name: v.vaccineName, dose: v.doseNumber, statusStr: pStatus, hospital: v.hospital || "" }
+                                    };
+                                });
 
-                                return {
-                                    title: evTitle,
-                                    start: startStr,
-                                    color: evColor,
-                                    extendedProps: {
-                                        name: v.vaccineName,
-                                        dose: v.doseNumber,
-                                        statusStr: pStatus,
-                                        hospital: v.hospital || ""
+                                const calendar = new FullCalendar.Calendar(calendarEl, {
+                                    initialView: 'dayGridMonth',
+                                    headerToolbar: { left: 'title', right: 'today dayGridMonth,timeGridWeek,listWeek' },
+                                    events: eventsArray,
+                                    eventClick: function (info) {
+                                        window.location.href = `appointment.html?vaccineName=${encodeURIComponent(info.event.extendedProps.name)}&doseNumber=${info.event.extendedProps.dose}`;
+                                    },
+                                    eventMouseEnter: function (info) {
+                                        let tooltipStr = `<strong style="color:var(--primary-blue); font-size:1rem;">${info.event.extendedProps.name}</strong><br>Status: <strong>${info.event.extendedProps.statusStr}</strong>`;
+                                        if (info.event.extendedProps.hospital) tooltipStr += `<br>Hospital: ${info.event.extendedProps.hospital}`;
+                                        let tooltipEl = document.createElement('div');
+                                        tooltipEl.className = 'fc-tooltip';
+                                        tooltipEl.innerHTML = tooltipStr;
+                                        document.body.appendChild(tooltipEl);
+                                        info.el.addEventListener('mousemove', function (e) {
+                                            tooltipEl.style.top = (e.pageY + 15) + 'px';
+                                            tooltipEl.style.left = (e.pageX + 15) + 'px';
+                                        });
+                                        info.el.addEventListener('mouseleave', function () { tooltipEl.remove(); });
                                     }
-                                };
-                            });
-
-                            const calendar = new FullCalendar.Calendar(calendarEl, {
-                                initialView: 'dayGridMonth',
-                                headerToolbar: {
-                                    left: 'title',
-                                    right: 'today dayGridMonth,timeGridWeek,listWeek'
-                                },
-                                events: eventsArray,
-                                eventClick: function (info) {
-                                    window.location.href = `appointment.html?vaccineName=${encodeURIComponent(info.event.extendedProps.name)}&doseNumber=${info.event.extendedProps.dose}`;
-                                },
-                                eventMouseEnter: function (info) {
-                                    let tooltipStr = `<strong style="color:var(--primary-blue); font-size:1rem;">${info.event.extendedProps.name}</strong><br>Status: <strong>${info.event.extendedProps.statusStr}</strong>`;
-
-                                    if (info.event.extendedProps.hospital) {
-                                        tooltipStr += `<br>Hospital: ${info.event.extendedProps.hospital}`;
-                                    }
-
-                                    let tooltipEl = document.createElement('div');
-                                    tooltipEl.className = 'fc-tooltip';
-                                    tooltipEl.innerHTML = tooltipStr;
-                                    document.body.appendChild(tooltipEl);
-
-                                    info.el.addEventListener('mousemove', function (e) {
-                                        tooltipEl.style.top = (e.pageY + 15) + 'px';
-                                        tooltipEl.style.left = (e.pageX + 15) + 'px';
-                                    });
-                                    info.el.addEventListener('mouseleave', function () {
-                                        tooltipEl.remove();
-                                    });
-                                }
-                            });
-                            calendar.render();
+                                });
+                                calendar.render();
+                            } catch (calErr) {
+                                console.warn("Calendar failed to render:", calErr);
+                            }
                         }
 
                         // Update Recent Immunizations Table
                         const tbody = document.querySelector(".table-container tbody");
                         if (tbody) {
                             let tableHTML = "";
-                            // Show top 5 relevant vaccines (completed or overdue first)
                             const sorted = [...merged].sort((a, b) => {
                                 const order = { "overdue": 1, "completed": 2, "scheduled": 3, "upcoming": 4 };
                                 return (order[a.status] || 99) - (order[b.status] || 99);
@@ -452,31 +421,36 @@
                                 let statusHTML = "";
                                 if (v.status === "completed") {
                                     statusHTML = `<span class="tag-completed">Completed</span>`;
-                                    if (v.certificateId) {
-                                        statusHTML += `<br><a href="../verify.html?id=${v.certificateId}" target="_blank" style="font-size:0.75rem;color:var(--tag-completed-text);text-decoration:none;display:inline-block;margin-top:4px;">📄 View Cert</a>`;
-                                    }
+                                    if (v.certificateId) statusHTML += `<br><a href="../verify.html?id=${v.certificateId}" target="_blank" style="font-size:0.75rem;color:var(--tag-completed-text);text-decoration:none;display:inline-block;margin-top:4px;">📄 View Cert</a>`;
                                 }
                                 else if (v.status === "overdue") statusHTML = `<span class="tag-overdue">Overdue</span>`;
                                 else if (v.status === "scheduled") statusHTML = `<span class="tag-scheduled">Scheduled</span>`;
                                 else statusHTML = `<span class="tag-scheduled" style="background: #fef3c7; color: #92400e;">Upcoming</span>`;
                                 tableHTML += `<tr><td>${v.vaccineName}</td><td>${statusHTML}</td></tr>`;
                             });
-                            tbody.innerHTML = tableHTML;
+                            tbody.innerHTML = tableHTML || "<tr><td colspan='2'>No records found</td></tr>";
                         }
+                    } catch (childErr) {
+                        console.error("Child vaccination data load failed:", childErr);
+                        // Show friendly error in dashboard instead of redirecting
+                        const tbody = document.querySelector(".table-container tbody");
+                        if (tbody) tbody.innerHTML = "<tr><td colspan='2' style='color:red;'>Failed to load records. Please refresh.</td></tr>";
+                    }
+                }
+            } catch (err) {
+                console.error("Critical Dashboard Error:", err);
+                // Only redirect if parent authentication itself failed.
+                if (err.message.includes("parent data") || err.message.includes("401")) {
+                    alert("Session expired or invalid. Please login again.");
+                    window.location.href = "login.html";
+                }
+            }
+        }
 
-                    });
-
-            })
-            .catch(err => {
-                console.error("Dashboard load failed:", err);
-                window.location.href = "login.html";
-              </script>
+        // Initialize dashboard on DOM load
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
     <script src="../js/avatars.js"></script>
     <script src="navbar-loader.js"></script>
-</body>          });
-        })();
-    </script>
-
 </body>
-
 </html>

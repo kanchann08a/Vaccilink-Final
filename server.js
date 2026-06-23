@@ -83,13 +83,23 @@ initializeDatabase();
 
 /* Email transporter */
 
+// Force IPv4 DNS resolution globally to prevent "ENETUNREACH 2404:6800..." (IPv6) errors on Render
+const dns = require("dns");
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder("ipv4first");
+}
+
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // upgrade later with STARTTLS
+  port: 465, // Use Port 465 for SSL/TLS, which is more reliable on Render than 587
+  secure: true, // true for 465, false for 587
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  },
+  tls: {
+    // Do not fail on invalid certs (optional, helpful for some Render networking configurations)
+    rejectUnauthorized: false
   },
   connectionTimeout: 20000, // 20 seconds
   socketTimeout: 20000,

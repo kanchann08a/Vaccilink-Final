@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: __dirname + '/.env' });
 const express = require("express");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
@@ -84,11 +84,17 @@ initializeDatabase();
 /* Email transporter */
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // upgrade later with STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
-  }
+  },
+  connectionTimeout: 20000, // 20 seconds
+  socketTimeout: 20000,
+  logger: true,
+  debug: true
 });
 
 // Diagnostic check for SMTP connection
@@ -1083,7 +1089,14 @@ app.post("/send-otp", async (req, res) => {
   otpStore[email] = otp;
 
   try {
-    console.log(`[Diagnostic] Attempting to send email...`);
+    console.log("EMAIL_USER loaded:", !!process.env.EMAIL_USER);
+    console.log("EMAIL_PASS loaded:", !!process.env.EMAIL_PASS);
+    console.log("SMTP Config:", JSON.stringify({ host: transporter.options.host, port: transporter.options.port, secure: transporter.options.secure }));
+    
+    console.log(`[Diagnostic] Testing SMTP connectivity before sending...`);
+    await transporter.verify();
+    console.log(`[Diagnostic] SMTP verified successfully. Attempting to send email...`);
+    
     const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
@@ -1196,7 +1209,13 @@ app.post("/vaccinator/scan/send-otp", async (req, res) => {
     console.log(`Recipient: ${parent.email}`);
     console.log(`EMAIL_USER configured as: ${process.env.EMAIL_USER}`);
     console.log(`EMAIL_PASS is present: ${!!process.env.EMAIL_PASS}`);
-    console.log(`[Diagnostic] Attempting to send email...`);
+    console.log("EMAIL_USER loaded:", !!process.env.EMAIL_USER);
+    console.log("EMAIL_PASS loaded:", !!process.env.EMAIL_PASS);
+    console.log("SMTP Config:", JSON.stringify({ host: transporter.options.host, port: transporter.options.port, secure: transporter.options.secure }));
+    
+    console.log(`[Diagnostic] Testing SMTP connectivity before sending...`);
+    await transporter.verify();
+    console.log(`[Diagnostic] SMTP verified successfully. Attempting to send email...`);
 
     const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -3588,6 +3607,206 @@ app.get("/api/analytics/trend", async (req, res) => {
   } catch (err) {
     console.error("Analytics trend error:", err);
     res.status(500).json({ message: "Error fetching vaccination trend data" });
+  }
+});
+
+/* ================= AI CHATBOT ================= */
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+let geminiModel = null;
+
+if (GEMINI_API_KEY && GEMINI_API_KEY !== "your_gemini_api_key_here") {
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  console.log("✅ Gemini AI model initialized for chatbot");
+} else {
+  console.warn("⚠️  GEMINI_API_KEY not set — chatbot general questions will use fallback responses");
+}
+
+/**
+ * Classify whether a user message is asking about their child's records
+ * or a general vaccination question.
+ */
+function classifyChatMessage(message) {
+  const childKeywords = [
+    "my child", "my kid", "my baby", "my son", "my daughter",
+    "pending", "completed", "overdue", "due next", "next vaccine",
+    "next vaccination", "vaccination history", "vaccine history",
+    "which vaccines", "what vaccines", "how many vaccines",
+    "when is", "when's", "schedule for my", "records",
+    "upcoming vaccines", "missed vaccines"
+  ];
+  const lowerMsg = message.toLowerCase();
+  return childKeywords.some(kw => lowerMsg.includes(kw));
+}
+
+/**
+ * Build a natural-language answer from the child's real vaccination data.
+ */
+function buildChildDataResponse(message, parent, merged) {
+  const lowerMsg = message.toLowerCase();
+  const childName = parent.childName || "your child";
+
+  const completed = merged.filter(v => v.status === "completed");
+  const pending = merged.filter(v => v.status === "upcoming" || v.status === "scheduled");
+  const overdue = merged.filter(v => v.status === "overdue");
+
+  // Sort pending by date
+  const pendingSorted = [...pending].sort((a, b) => {
+    const da = new Date(a.scheduledDate || a.dueDate || 0);
+    const db = new Date(b.scheduledDate || b.dueDate || 0);
+    return da - db;
+  });
+
+  // What vaccines are pending?
+  if (lowerMsg.includes("pending") || (lowerMsg.includes("upcoming") && lowerMsg.includes("vaccine"))) {
+    if (pendingSorted.length === 0) {
+      return `Great news! ${childName} has no pending vaccines. All vaccinations are up to date! 🎉`;
+    }
+    let response = `📋 **Pending vaccines for ${childName}:**\n\n`;
+    pendingSorted.forEach((v, i) => {
+      const dueDate = v.scheduledDate || v.dueDate;
+      const dateStr = dueDate ? new Date(dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Date not set";
+      response += `${i + 1}. **${v.vaccineName}** (Dose ${v.doseNumber}) — Due: ${dateStr}\n`;
+    });
+    response += `\nTotal: ${pendingSorted.length} vaccine(s) pending.`;
+    return response;
+  }
+
+  // Next vaccination
+  if (lowerMsg.includes("next vaccine") || lowerMsg.includes("next vaccination") || lowerMsg.includes("due next")) {
+    if (pendingSorted.length === 0) {
+      return `${childName} has no upcoming vaccines. All vaccinations are complete! ✅`;
+    }
+    const next = pendingSorted[0];
+    const dueDate = next.scheduledDate || next.dueDate;
+    const dateStr = dueDate ? new Date(dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Date not set";
+    return `💉 **Next vaccine for ${childName}:**\n\n**${next.vaccineName}** (Dose ${next.doseNumber})\n📅 Scheduled: ${dateStr}\n\nPlease book an appointment if you haven't already!`;
+  }
+
+  // Vaccination history / completed vaccines
+  if (lowerMsg.includes("history") || lowerMsg.includes("completed") || lowerMsg.includes("taken")) {
+    if (completed.length === 0) {
+      return `${childName} hasn't received any vaccinations yet according to our records.`;
+    }
+    let response = `✅ **Completed vaccines for ${childName}:**\n\n`;
+    completed.forEach((v, i) => {
+      const dateStr = v.dateTaken ? new Date(v.dateTaken).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Date not recorded";
+      response += `${i + 1}. **${v.vaccineName}** (Dose ${v.doseNumber}) — ${dateStr}\n`;
+    });
+    response += `\nTotal: ${completed.length} vaccine(s) completed.`;
+    return response;
+  }
+
+  // Overdue / missed vaccines
+  if (lowerMsg.includes("overdue") || lowerMsg.includes("missed") || lowerMsg.includes("late")) {
+    if (overdue.length === 0) {
+      return `${childName} has no overdue vaccines. Everything is on track! 👍`;
+    }
+    let response = `⚠️ **Overdue vaccines for ${childName}:**\n\n`;
+    overdue.forEach((v, i) => {
+      const dueDate = v.dueDate;
+      const dateStr = dueDate ? new Date(dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Date not set";
+      response += `${i + 1}. **${v.vaccineName}** (Dose ${v.doseNumber}) — Was due: ${dateStr}\n`;
+    });
+    response += `\n⚠️ Please consult your doctor and book these vaccinations as soon as possible.`;
+    return response;
+  }
+
+  // General summary about the child
+  let response = `📊 **Vaccination summary for ${childName}:**\n\n`;
+  response += `✅ Completed: ${completed.length}\n`;
+  response += `📋 Pending: ${pending.length}\n`;
+  response += `⚠️ Overdue: ${overdue.length}\n`;
+  response += `📝 Total vaccines in schedule: ${merged.length}\n`;
+  if (pendingSorted.length > 0) {
+    const next = pendingSorted[0];
+    const dueDate = next.scheduledDate || next.dueDate;
+    const dateStr = dueDate ? new Date(dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Soon";
+    response += `\n💉 Next up: **${next.vaccineName}** (Dose ${next.doseNumber}) — ${dateStr}`;
+  }
+  return response;
+}
+
+const CHATBOT_SYSTEM_PROMPT = `You are VacciLink AI Assistant. Help parents understand vaccinations and child healthcare records. Use database information for child-specific questions. Never invent medical records, vaccine schedules, due dates, or vaccination history. Keep responses simple, accurate, and professional. Use simple language a parent can understand. If you don't know something, say so honestly. Always recommend consulting a doctor for medical decisions. Keep responses concise (under 200 words). Format important terms in **bold**.`;
+
+app.post("/api/chatbot", async (req, res) => {
+  try {
+    const { message, email } = req.body;
+
+    if (!message || !email) {
+      return res.status(400).json({ reply: "Please provide a message and your login email." });
+    }
+
+    const isChildQuestion = classifyChatMessage(message);
+
+    if (isChildQuestion) {
+      // Fetch parent and child data from MongoDB
+      const parent = await Parent.findOne({
+        $or: [{ email }, { phone: email }]
+      });
+
+      if (!parent) {
+        return res.json({ reply: "I couldn't find your account. Please make sure you're logged in." });
+      }
+
+      if (!parent.childID) {
+        return res.json({ reply: "No child profile is linked to your account yet. Please complete your child's registration first." });
+      }
+
+      // Generate schedule and merge with history
+      const schedule = generateSchedule(parent.childDOB);
+      const merged = mergeHistory(schedule, parent.vaccinationHistory);
+
+      const reply = buildChildDataResponse(message, parent, merged);
+      return res.json({ reply, source: "database" });
+    }
+
+    // General vaccination question — use Gemini AI
+    if (geminiModel) {
+      try {
+        const chat = geminiModel.startChat({
+          history: [],
+          generationConfig: { maxOutputTokens: 500 }
+        });
+        const result = await chat.sendMessage(
+          CHATBOT_SYSTEM_PROMPT + "\n\nParent's question: " + message
+        );
+        const aiReply = result.response.text();
+        return res.json({ reply: aiReply, source: "ai" });
+      } catch (aiErr) {
+        console.error("Gemini AI error:", aiErr.message);
+        return res.json({
+          reply: "I'm having trouble connecting to the AI service right now. Please try again in a moment, or ask about your child's vaccine records which I can look up directly!",
+          source: "fallback"
+        });
+      }
+    } else {
+      // Fallback responses when Gemini is not configured
+      const fallbackResponses = {
+        "mmr": "**MMR Vaccine** protects against Measles, Mumps, and Rubella. It's typically given in two doses — the first at 9 months and the second at 16 months. Side effects may include mild fever and rash. Consult your pediatrician for more details.",
+        "side effect": "Common vaccine side effects include mild fever, redness or swelling at the injection site, and fussiness. These usually resolve within 1-2 days. Contact your doctor if symptoms persist or worsen.",
+        "important": "Vaccinations are crucial because they protect your child from serious diseases like Polio, Measles, Hepatitis, and Tuberculosis. They also help build herd immunity to protect the community.",
+        "birth": "Vaccines given at birth include **BCG** (Tuberculosis), **OPV-0** (Polio), **Hepatitis-B** (first dose), and **Vitamin K**. These provide essential early protection for your newborn."
+      };
+
+      const lowerMsg = message.toLowerCase();
+      for (const [key, response] of Object.entries(fallbackResponses)) {
+        if (lowerMsg.includes(key)) {
+          return res.json({ reply: response, source: "fallback" });
+        }
+      }
+
+      return res.json({
+        reply: "I can help you with vaccination information! Try asking:\n\n• What is the MMR vaccine?\n• What are common vaccine side effects?\n• Why are vaccinations important?\n• What vaccines are given at birth?\n\nOr ask about **your child's records** like:\n• What vaccines are pending for my child?\n• When is my child's next vaccination?",
+        source: "fallback"
+      });
+    }
+  } catch (err) {
+    console.error("Chatbot error:", err);
+    res.status(500).json({ reply: "Something went wrong. Please try again later." });
   }
 });
 

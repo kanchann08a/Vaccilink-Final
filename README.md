@@ -53,10 +53,9 @@ The platform also provides administrative tools that allow healthcare providers 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- React.js
 - JavaScript
-- HTML5
-- CSS3
+- HTML
+- CSS
 
 ### Backend
 - Node.js
@@ -70,7 +69,7 @@ The platform also provides administrative tools that allow healthcare providers 
 - GitHub
 
 ### Deployment
-- Vercel / Render (Depending on deployment setup)
+- Render
 
 ---
 
@@ -155,28 +154,7 @@ These entities work together to provide efficient scheduling and record manageme
 ## 📂 Project Structure
 
 ```text
-VacciLink/
-│
-├── frontend/
-│   ├── components/
-│   ├── pages/
-│   ├── assets/
-│   └── services/
-│
-├── backend/
-│   ├── routes/
-│   ├── controllers/
-│   ├── middleware/
-│   └── models/
-│
-├── database/
-│
-├── public/
-│
-├── package.json
-├── README.md
-└── .env
-```
+
 
 ---
 
